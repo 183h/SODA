@@ -39,3 +39,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+
+# PLY parser output
+parsetab.py
+parser.out
