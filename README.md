@@ -11,5 +11,7 @@ SODA can be installed via **pip** with command, executed inside clonned reposito
 
 `pip install -e .`
 
-Afterwards it can be run in terminal via `$ soda`.
+Afterwards it can be run in terminal via:
+
+`$ soda`
 
