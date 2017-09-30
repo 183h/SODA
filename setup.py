@@ -10,9 +10,13 @@ setup(
     url='https://github.com/mpuk/SODA',
     license='MIT',
 
-    packages=['soda.test'],
     install_requires=[
         'Click',
         'ply'
     ],
+
+    entry_points='''
+        [console_scripts]
+        soda=soda.app:main
+    ''',
 )
