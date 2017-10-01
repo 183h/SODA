@@ -1,30 +1,36 @@
 import click
 from compiler import lexer, parser
 
-pass_lexer = click.make_pass_decorator(lexer.Lexer, ensure=True)
-
 
 @click.group()
-def main():
-    pass
+@click.pass_context
+def main(ctx):
+    ctx.obj = {}
+    ctx.obj['lexer'] = lexer.Lexer()
+    ctx.obj['parser'] = parser.Parser(ctx.obj['lexer'].tokens)
+
 
 @main.command(short_help='run lexical analysis')
 @click.argument('FILEPATH', type=click.Path(exists=True))
-@pass_lexer
-def lex(lexer, filepath):
+@click.pass_context
+def lex(ctx, filepath):
     '''
     Run lexical analysis.
     '''
 
     file = open(filepath, 'r')
 
-    lexer.lexical_analysis(file)
+    ctx.obj['lexer'].lexical_analysis(file)
+
 
 @main.command(short_help='run parsing')
 @click.argument('FILEPATH', type=click.Path(exists=True))
-def parse(filepath):
+@click.pass_context
+def parse(ctx, filepath):
     '''
     Run parsing.
     '''
 
-    pass
+    file = open(filepath, 'r')
+
+    ctx.obj['parser'].parsing(file)
