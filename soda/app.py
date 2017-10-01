@@ -7,8 +7,10 @@ def main():
 
 
 @main.command()
-def lexer():
+@click.argument('FILEPATH', type=click.Path(exists=True))
+def lexer(filepath):
     '''
     Run lexical analysis
     '''
-    pass
+
+    file = open(filepath, 'r')
