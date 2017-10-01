@@ -45,8 +45,8 @@ class Lexer(object):
         print "Illegal character {0} at line {1}".format(t.value[0], t.lineno)
         t.lexer.skip(1)
 
-    def __init__(self, **kwargs):
-        self._lexer = lex.lex(object=self, **kwargs)
+    def __init__(self):
+        self._lexer = lex.lex(object=self)
 
     def lexical_analysis(self, file):
         for line in file:
@@ -54,6 +54,7 @@ class Lexer(object):
                 lex_input = line
             except EOFError:
                 break
+
             self._lexer.input(lex_input)
             while True:
                 token = self._lexer.token()
