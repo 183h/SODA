@@ -46,7 +46,7 @@ class Lexer(object):
         t.lexer.skip(1)
 
     def __init__(self, **kwargs):
-        self.lexer = lex.lex(object=self, **kwargs)
+        self._lexer = lex.lex(object=self, **kwargs)
 
     def lexical_analysis(self, file):
         for line in file:
@@ -54,9 +54,9 @@ class Lexer(object):
                 lex_input = line
             except EOFError:
                 break
-            self.lexer.input(lex_input)
+            self._lexer.input(lex_input)
             while True:
-                token = self.lexer.token()
+                token = self._lexer.token()
                 if not token:
                     break
                 print token
