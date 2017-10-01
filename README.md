@@ -15,3 +15,17 @@ Afterwards it can be run in terminal via:
 
 `$ soda`
 
+## Usage
+Run `$soda --help`.
+
+
+```
+Usage: soda [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  lex    run lexical analysis
+  parse  run parsing
+```
