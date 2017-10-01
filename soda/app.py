@@ -6,11 +6,11 @@ def main():
     pass
 
 
-@main.command()
+@main.command(short_help='run lexical analysis')
 @click.argument('FILEPATH', type=click.Path(exists=True))
 def lexer(filepath):
     '''
-    Run lexical analysis
+    Run lexical analysis.
     '''
 
     file = open(filepath, 'r')
