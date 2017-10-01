@@ -10,7 +10,7 @@ def main(ctx):
     ctx.obj['parser'] = parser.Parser(ctx.obj['lexer'].tokens)
 
 
-@main.command(short_help='run lexical analysis')
+@main.command(short_help='Run lexical analysis.')
 @click.argument('FILEPATH', type=click.Path(exists=True))
 @click.pass_context
 def lex(ctx, filepath):
@@ -25,7 +25,7 @@ def lex(ctx, filepath):
     ctx.obj['lexer'].lexical_analysis(file)
 
 
-@main.command(short_help='run parsing')
+@main.command(short_help='Run parsing.')
 @click.argument('FILEPATH', type=click.Path(exists=True))
 @click.pass_context
 def parse(ctx, filepath):
