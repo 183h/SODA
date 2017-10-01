@@ -16,6 +16,8 @@ def main(ctx):
 def lex(ctx, filepath):
     '''
     Run lexical analysis.
+
+        FILEPATH - path to file with algorithm description.
     '''
 
     file = open(filepath, 'r')
@@ -29,6 +31,8 @@ def lex(ctx, filepath):
 def parse(ctx, filepath):
     '''
     Run parsing.
+
+        FILEPATH - path to file with algorithm description.
     '''
 
     file = open(filepath, 'r')
