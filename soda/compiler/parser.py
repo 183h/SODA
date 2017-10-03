@@ -12,6 +12,7 @@ class Parser(object):
                           | REGISTERS EQUALS register_list SEMICOLON
                           | INIT EQUALS init_list SEMICOLON
                           | TERM EQUALS term_list SEMICOLON'''
+
     def p_status_list(self, p):
         ''' status_list  : status_term
                          | status_list COMMA status_term'''
