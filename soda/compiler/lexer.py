@@ -3,30 +3,33 @@ import ply.lex as lex
 
 class Lexer(object):
     keywords = (
-        'INIT', 'TERM', 'BEGIN', 'END',
-        'SEND', 'BECOME', 'DASH', 'STATUSES', 'REGISTERS'
+        'INIT', 'TERM', 'STATUSES', 'REGISTERS',
+        # 'BEGIN', 'END', 'SEND', 'BECOME', 'DASH'
     )
+
     tokens = keywords + (
-        'NAME', 'EQUALS', 'LPAREN', 'RPAREN',
-        'COMMA', 'SEMICOLON',
+        'NAME', 'EQUALS', 'COMMA', 'SEMICOLON',
+        # 'LPAREN', 'RPAREN',
     )
 
     # Tokens
 
     t_EQUALS = r'='
-    t_LPAREN = r'\('
-    t_RPAREN = r'\)'
     t_COMMA = r','
     t_SEMICOLON = r';'
-    t_DASH = r'-'
     t_STATUSES = r'STATUSES'
     t_REGISTERS = r'REGISTERS'
     t_INIT = r'INIT'
     t_TERM = r'TERM'
-    t_BEGIN = r'begin'
-    t_END = r'end'
-    t_SEND = r'SEND'
-    t_BECOME = r'BECOME'
+    t_ignore_COMMENT = r'\#.*'
+
+    # t_BEGIN = r'begin'
+    # t_END = r'end'
+    # t_SEND = r'SEND'
+    # t_BECOME = r'BECOME'
+    # t_DASH = r'-'
+    # t_LPAREN = r'\('
+    # t_RPAREN = r'\)'
 
     # Ignored characters
     t_ignore = " \t"
