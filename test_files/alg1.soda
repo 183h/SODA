@@ -1,0 +1,17 @@
+STATUSES = INITIATOR, IDLE, DONE;
+INIT = INITIATOR, IDLE;
+TERM = DONE;
+
+#INITIATOR
+#  RANDOM
+#    begin
+#      SEND(x, NEIGHBORS);
+#      BECOME(DONE);
+#    end
+#
+#IDLE
+#  RECEIVE(x)
+#    begin
+#      SEND(x, NEIGHBORS - SENDER);
+#      BECOME(DONE);
+#    end
