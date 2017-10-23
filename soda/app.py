@@ -1,5 +1,6 @@
 import click
-from compiler import lexer, parser
+from soda.compiler import lexer, parser
+from soda.distributed_environment import behavior
 
 
 @click.group()
@@ -7,7 +8,6 @@ from compiler import lexer, parser
 def main(ctx):
     ctx.obj = {}
     ctx.obj['lexer'] = lexer.Lexer()
-    ctx.obj['parser'] = parser.Parser(ctx.obj['lexer'].tokens)
 
 
 @main.command(short_help='Run lexical analysis.')
@@ -36,5 +36,7 @@ def parse(ctx, filepath):
     '''
 
     file = open(filepath, 'r')
+    behavior_ = behavior.Behavior()
+    parser_ = parser.Parser(ctx.obj['lexer'].tokens, behavior_)
 
-    ctx.obj['parser'].parsing(file)
+    parser_.parsing(file)

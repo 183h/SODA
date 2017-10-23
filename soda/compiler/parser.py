@@ -1,50 +1,56 @@
 import ply.yacc as yacc
 
-states, registers, init, term = [], [], [], []
-
 
 class Parser(object):
     def p_algorithm(self, p):
-        ''' algorithm : first_section'''
+        ''' algorithm : first_section second_section'''
 
     def p_first_section(self, p):
-        ''' first_section : STATUSES EQUALS status_list SEMICOLON
+        ''' first_section : STATES EQUALS states_list SEMICOLON
                           | REGISTERS EQUALS register_list SEMICOLON
                           | INIT EQUALS init_list SEMICOLON
                           | TERM EQUALS term_list SEMICOLON'''
 
-    def p_status_list(self, p):
-        ''' status_list  : status_term
-                         | status_list COMMA status_term'''
-    def p_status_term(self, p):
-        ''' status_term : NAME'''
-        states.append(p[1])
+    def p_states_list(self, p):
+        ''' states_list  : state_term
+                         | states_list COMMA state_term'''
+
+    def p_state_term(self, p):
+        ''' state_term : NAME'''
+        self.behavior.states.append(p[1])
 
     def p_register_list(self, p):
         ''' register_list : register_term
                           | register_list COMMA register_term'''
+
     def p_register_term(self, p):
         ''' register_term : NAME'''
-        registers.append(p[1])
+        self.behavior.registers.append(p[1])
 
     def p_init_list(self, p):
         ''' init_list : init_term
                       | init_list COMMA init_term'''
+
     def p_init_term(self, p):
         ''' init_term : NAME'''
-        init.append(p[1])
+        self.behavior.init_states.append(p[1])
 
     def p_term_list(self, p):
         ''' term_list : term_term
                       | term_list COMMA term_term'''
+
     def p_term_term(self, p):
         ''' term_term : NAME'''
-        term.append(p[1])
+        self.behavior.term_states.append(p[1])
+
+    def p_second_section(self, p):
+        pass
 
     def p_error(self, p):
-        print("Syntax error in input!")
+        print("Syntax error in input! -> {}".format(p))
 
-    def __init__(self, tokens):
+    def __init__(self, tokens, behavior):
+        self.behavior = behavior
         self.tokens = tokens
         self._parser = yacc.yacc(module=self)
 
