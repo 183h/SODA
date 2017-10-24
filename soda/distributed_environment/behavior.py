@@ -4,3 +4,4 @@ class Behavior(object):
         self.registers = []
         self.init_states = []
         self.term_states = []
+        self.states_behaviors = {}
