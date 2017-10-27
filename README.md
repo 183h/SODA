@@ -2,6 +2,8 @@
 Simulator of distributed algorithms
 
 ## Dependencies
+SODA is developed under **python 3.5** version.
+
 Python dependencies are listed in file **requirements.txt**. Dependencies are installed via **pip** with command:
 
 `pip install -r /path/to/requirements.txt`
