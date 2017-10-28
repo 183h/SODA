@@ -1,10 +1,12 @@
 import ply.lex as lex
+from soda.helpers import prepare_file
 
 
 class Lexer(object):
     keywords = (
         'INIT', 'TERM', 'STATES', 'REGISTERS',
-        # 'BEGIN', 'END', 'SEND', 'BECOME', 'DASH'
+        'begin', 'end',
+        # 'SEND', 'BECOME', 'DASH'
     )
 
     tokens = keywords + (
@@ -22,8 +24,8 @@ class Lexer(object):
     t_INIT = r'INIT'
     t_TERM = r'TERM'
 
-    # t_BEGIN = r'begin'
-    # t_END = r'end'
+    t_begin = r'begin'
+    t_end = r'end'
     # t_SEND = r'SEND'
     # t_BECOME = r'BECOME'
     # t_DASH = r'-'
@@ -31,17 +33,13 @@ class Lexer(object):
     # t_RPAREN = r'\)'
 
     # Ignored characters
-    t_ignore = " \t"
+    t_ignore = ' \t\n'
 
     def t_NAME(self, t):
         r'[a-zA-Z][a-zA-Z]*'
         if t.value in self.keywords:  # is this a keyword?
             t.type = t.value
         return t
-
-    def t_newline(self, t):
-        r'\n+'
-        t.lexer.lineno += t.value.count("\n")
 
     def t_error(self, t):
         print ("Illegal character {0} at line {1}".format(t.value[0], t.lineno))
@@ -50,6 +48,7 @@ class Lexer(object):
     def __init__(self):
         self._lexer = lex.lex(object=self)
 
+    @prepare_file
     def lexical_analysis(self, file):
         for line in file:
             try:
