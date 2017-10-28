@@ -1,15 +1,17 @@
 import ply.yacc as yacc
+from soda.helpers import prepare_file
 
 
 class Parser(object):
     def p_algorithm(self, p):
-        ''' algorithm : first_section second_section'''
+        ''' algorithm : first_section'''
 
     def p_first_section(self, p):
         ''' first_section : STATES EQUALS states_list SEMICOLON
                           | REGISTERS EQUALS register_list SEMICOLON
                           | INIT EQUALS init_list SEMICOLON
-                          | TERM EQUALS term_list SEMICOLON'''
+                          | TERM EQUALS term_list SEMICOLON
+                          | second_section'''
 
     def p_states_list(self, p):
         ''' states_list  : state_term
@@ -44,16 +46,21 @@ class Parser(object):
         self.behavior.term_states.append(p[1])
 
     def p_second_section(self, p):
-        pass
+        ''' second_section : behaviors'''
+
+    def p_behaviors(self, p):
+        ''' behaviors : NAME begin end '''
 
     def p_error(self, p):
         print("Syntax error in input! -> {}".format(p))
 
-    def __init__(self, tokens, behavior):
+    def __init__(self, lexer, behavior):
+        self.lexer = lexer
         self.behavior = behavior
-        self.tokens = tokens
+        self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self)
 
+    @prepare_file
     def parsing(self, file):
         for line in file:
             try:
@@ -61,4 +68,4 @@ class Parser(object):
             except EOFError:
                 break
 
-            self._parser.parse(parser_input)
+            self._parser.parse(parser_input, lexer=self.lexer._lexer)
