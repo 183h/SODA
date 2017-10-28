@@ -20,9 +20,7 @@ def lex(ctx, filepath):
         FILEPATH - path to file with algorithm description.
     '''
 
-    file = open(filepath, 'r')
-
-    ctx.obj['lexer'].lexical_analysis(file)
+    ctx.obj['lexer'].lexical_analysis(filepath=filepath)
 
 
 @main.command(short_help='Run parsing.')
@@ -35,8 +33,7 @@ def parse(ctx, filepath):
         FILEPATH - path to file with algorithm description.
     '''
 
-    file = open(filepath, 'r')
     behavior_ = behavior.Behavior()
-    parser_ = parser.Parser(ctx.obj['lexer'].tokens, behavior_)
+    parser_ = parser.Parser(ctx.obj['lexer'], behavior_)
 
-    parser_.parsing(file)
+    parser_.parsing(filepath=filepath)
