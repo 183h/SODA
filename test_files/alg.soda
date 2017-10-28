@@ -1,6 +1,7 @@
 STATES = INITIATOR, IDLE, DONE;
 INIT = INITIATOR, IDLE;
 TERM = DONE;
+
 INITIATOR
-begin
-end
+	begin
+	end

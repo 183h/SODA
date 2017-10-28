@@ -4,7 +4,7 @@ from os import remove
 def prepare_file(func):
     def wrapper(*args, **kwargs):
 
-        print("Preparing temp file...")
+        print ("Preparing temp file...\n")
 
         file = open(kwargs["filepath"], 'r')
         data = file.read()
@@ -19,6 +19,6 @@ def prepare_file(func):
         newfile.close()
         remove(kwargs["filepath"] + ".temp")
 
-        print("Deleting temp file...")
+        print ("\nDeleting temp file...")
 
     return wrapper

@@ -50,6 +50,7 @@ class Lexer(object):
 
     @prepare_file
     def lexical_analysis(self, file):
+        print ("Started lexical analysis...")
         for line in file:
             try:
                 lex_input = line
@@ -61,4 +62,4 @@ class Lexer(object):
                 token = self._lexer.token()
                 if not token:
                     break
-                print (token)
+                print ("  ", token)
