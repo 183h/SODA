@@ -1,9 +1,7 @@
 from os import remove
-from functools import wraps
 
 
 def prepare_file(func):
-    @wraps(func)
     def wrapper(*args, **kwargs):
 
         print("Preparing temp file...")
