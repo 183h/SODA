@@ -8,6 +8,7 @@ from soda.distributed_environment import behavior
 def main(ctx):
     ctx.obj = {}
     ctx.obj['lexer'] = lexer.Lexer()
+    ctx.obj['lexer'].build()
 
 
 @main.command(short_help='Run lexical analysis.')
@@ -34,6 +35,7 @@ def parse(ctx, filepath):
     '''
 
     behavior_ = behavior.Behavior()
-    parser_ = parser.Parser(ctx.obj['lexer'], behavior_)
+    parser_ = parser.Parser()
 
+    parser_.build(ctx.obj['lexer'], behavior_)
     parser_.parsing(filepath=filepath)
