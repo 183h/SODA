@@ -10,8 +10,7 @@ class Parser(object):
         ''' first_section : STATES EQUALS states_list SEMICOLON
                           | REGISTERS EQUALS register_list SEMICOLON
                           | INIT EQUALS init_list SEMICOLON
-                          | TERM EQUALS term_list SEMICOLON
-                          | second_section'''
+                          | TERM EQUALS term_list SEMICOLON'''
 
     def p_states_list(self, p):
         ''' states_list  : state_term
@@ -45,16 +44,10 @@ class Parser(object):
         ''' term_term : NAME'''
         self.behavior.term_states.append(p[1])
 
-    def p_second_section(self, p):
-        ''' second_section : behaviors'''
-
-    def p_behaviors(self, p):
-        ''' behaviors : NAME begin end '''
-
     def p_error(self, p):
         print("Syntax error in input! -> {}".format(p))
 
-    def __init__(self, lexer, behavior):
+    def build(self, lexer, behavior):
         self.lexer = lexer
         self.behavior = behavior
         self.tokens = lexer.tokens
