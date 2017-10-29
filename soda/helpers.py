@@ -10,13 +10,13 @@ def prepare_file(func):
         data = file.read()
         file.close()
         stripped_data = data.replace(" ", "").replace("\n", " ")
-        newfile = open(kwargs["filepath"] + ".temp", "w+")
-        newfile.write(stripped_data)
-        newfile.seek(0, 0)
+        temp_file = open(kwargs["filepath"] + ".temp", "w+")
+        temp_file.write(stripped_data)
+        temp_file.seek(0, 0)
 
-        func(*args, newfile)
+        func(*args, temp_file)
 
-        newfile.close()
+        temp_file.close()
         remove(kwargs["filepath"] + ".temp")
 
         print ("\nDeleting temp file...")
