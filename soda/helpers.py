@@ -7,17 +7,17 @@ def prepare_file(func):
         print ("Preparing temp file...\n")
 
         file = open(kwargs["filepath"], 'r')
-        data = file.read()
-        file.close()
-        stripped_data = data.replace(" ", "").replace("\n", " ")
-        temp_file = open(kwargs["filepath"] + ".temp", "w+")
-        temp_file.write(stripped_data)
-        temp_file.seek(0, 0)
+        # data = file.read()
+        # file.close()
+        # stripped_data = data.replace("\n", "").replace(" ", "")
+        # temp_file = open(kwargs["filepath"] + ".temp", "w+")
+        # temp_file.write(stripped_data)
+        # temp_file.seek(0, 0)
 
-        func(*args, temp_file)
+        func(*args, file)
 
-        temp_file.close()
-        remove(kwargs["filepath"] + ".temp")
+        # temp_file.close()
+        # remove(kwargs["filepath"] + ".temp")
 
         print ("\nDeleting temp file...")
 
