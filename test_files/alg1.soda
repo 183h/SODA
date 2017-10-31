@@ -12,6 +12,6 @@ INITIATOR
 IDLE
   RECEIVE(x)
     begin
-      SEND(x, NEIGHBORS - SENDER);
+      SEND(x, NEIGHBORS);
       BECOME(DONE);
     end
