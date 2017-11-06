@@ -1,36 +1,25 @@
 import ply.lex as lex
-from soda.helpers import prepare_file
+from soda.helpers import open_file
 
 
 class Lexer(object):
     keywords = (
         'INIT', 'TERM', 'STATES', 'REGISTERS',
         'begin', 'end',
-        # 'SEND', 'BECOME', 'DASH'
+        'SEND', 'BECOME'
     )
 
     tokens = keywords + (
         'NAME', 'EQUALS', 'COMMA', 'SEMICOLON',
-        # 'LPAREN', 'RPAREN',
+        'LPAREN', 'RPAREN'
     )
 
     # Tokens
-
     t_EQUALS = r'='
     t_COMMA = r','
     t_SEMICOLON = r';'
-    t_STATES = r'STATES'
-    t_REGISTERS = r'REGISTERS'
-    t_INIT = r'INIT'
-    t_TERM = r'TERM'
-
-    t_begin = r'begin'
-    t_end = r'end'
-    # t_SEND = r'SEND'
-    # t_BECOME = r'BECOME'
-    # t_DASH = r'-'
-    # t_LPAREN = r'\('
-    # t_RPAREN = r'\)'
+    t_LPAREN = r'\('
+    t_RPAREN = r'\)'
 
     # Ignored characters
     t_ignore = ' \t\n'
@@ -48,7 +37,7 @@ class Lexer(object):
     def build(self, **kwargs):
         self._lexer = lex.lex(module=self, **kwargs)
 
-    @prepare_file
+    @open_file
     def lexical_analysis(self, file):
         print ("Started lexical analysis...")
         for line in file:
