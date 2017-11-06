@@ -2,7 +2,7 @@ import ply.lex as lex
 from soda.helpers import open_file
 
 
-class Lexer(object):
+class AlgorithmLexer(object):
     keywords = (
         'INIT', 'TERM', 'STATES', 'REGISTERS',
         'begin', 'end',
@@ -52,3 +52,4 @@ class Lexer(object):
                 if not token:
                     break
                 print ("  ", token)
+        print ("Ended lexical analysis...")
