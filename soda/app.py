@@ -1,7 +1,7 @@
 import click
 from soda.compiler.algorithm_lexer import AlgorithmLexer
 from soda.compiler.algorithm_parser import AlgorithmParser
-from soda.distributed_environment import behavior
+from soda.distributed_environment.algorithm_behavior import AlgorithmBehavior
 
 
 @click.group()
@@ -35,8 +35,8 @@ def parse(ctx, filepath):
         FILEPATH - path to file with algorithm description.
     '''
 
-    behavior_ = behavior.Behavior()
-    parser_ = AlgorithmParser()
+    behavior = AlgorithmBehavior()
+    parser = AlgorithmParser()
 
-    parser_.build(ctx.obj['lexer'], behavior_)
-    parser_.parsing(filepath=filepath)
+    parser.build(ctx.obj['lexer'], behavior)
+    parser.parsing(filepath=filepath)

@@ -1,4 +1,4 @@
-class Behavior(object):
+class AlgorithmBehavior(object):
     def __init__(self):
         self.states = []
         self.registers = []
