@@ -40,6 +40,7 @@ class AlgorithmLexer(object):
     @open_file
     def lexical_analysis(self, file):
         print ("Started lexical analysis...")
+
         for line in file:
             try:
                 lex_input = line
@@ -52,4 +53,5 @@ class AlgorithmLexer(object):
                 if not token:
                     break
                 print ("  ", token)
+
         print ("Ended lexical analysis...")
