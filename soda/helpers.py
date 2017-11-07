@@ -8,7 +8,7 @@ def open_file(func):
 
         func(*args, file)
 
-        print ("\Closing temp file...")
+        print ("\nClosing temp file...")
         file.close()
 
     return wrapper
