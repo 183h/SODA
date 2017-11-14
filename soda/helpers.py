@@ -1,6 +1,3 @@
-from os import remove
-
-
 def open_file(func):
     def wrapper(*args, **kwargs):
         print ("Opening file...\n")
