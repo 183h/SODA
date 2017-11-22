@@ -1,14 +1,15 @@
 STATES = INITIATOR, IDLE, DONE;
 TERM = DONE;
 INIT = INITIATOR, IDLE;
+
 INITIATOR
-begin
-SEND
-BECOME
-SEND
-end
-DONE
-begin
-SEND
-SEND
-end
+	begin
+		SEND
+		BECOME
+	end
+	
+IDLE
+	begin
+		READ
+		BECOME
+	end
