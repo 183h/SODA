@@ -54,7 +54,7 @@ class AlgorithmParser(object):
 
     def p_second_section_state_behavior(self, p):
         ''' second_section_state_behavior : NAME begin commands end'''
-        self.behavior.states_behaviors[p[1]] = self.state_commands
+        self.behavior.states_behaviors[p[1]] = self.state_commands[::-1]
         self.state_commands = []
 
     def p_commands(self, p):
@@ -63,7 +63,8 @@ class AlgorithmParser(object):
         self.state_commands.append(p[1])
 
     def p_command(self, p):
-        ''' command : SEND
+        ''' command : READ
+                    | SEND
                     | BECOME'''
         p[0] = p[1]
 
@@ -90,6 +91,6 @@ class AlgorithmParser(object):
                 except StopIteration:
                     return None
 
-        print ("Started parsing...")
+        print ("Started algorithm parsing...")
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
-        print ("Ended parsing...")
+        print ("Ended algorithm parsing...")

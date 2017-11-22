@@ -6,20 +6,17 @@ class AlgorithmLexer(object):
     keywords = (
         'INIT', 'TERM', 'STATES', 'REGISTERS',
         'begin', 'end',
-        'SEND', 'BECOME'
+        'SEND', 'BECOME', 'READ'
     )
 
     tokens = keywords + (
-        'NAME', 'EQUALS', 'COMMA', 'SEMICOLON',
-        'LPAREN', 'RPAREN'
+        'NAME', 'EQUALS', 'COMMA', 'SEMICOLON'
     )
 
     # Tokens
     t_EQUALS = r'='
     t_COMMA = r','
     t_SEMICOLON = r';'
-    t_LPAREN = r'\('
-    t_RPAREN = r'\)'
 
     # Ignored characters
     t_ignore = ' \t\n'
@@ -39,7 +36,7 @@ class AlgorithmLexer(object):
 
     @open_file
     def lexical_analysis(self, file):
-        print ("Started lexical analysis...")
+        print ("Started algorithm lexical analysis...")
 
         for line in file:
             try:
@@ -54,4 +51,4 @@ class AlgorithmLexer(object):
                     break
                 print ("  ", token)
 
-        print ("Ended lexical analysis...")
+        print ("Ended algorithm lexical analysis...")
