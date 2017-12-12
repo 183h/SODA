@@ -84,7 +84,7 @@ def parsetop(ctx, filepath):
 @click.pass_context
 def sim(ctx, algorithm, topology):
     '''
-    Run topology parsing.
+    Compile algorithm, topology and start simulation.
 
         FILEPATH - path to file with topology description.
     '''
@@ -102,7 +102,4 @@ def sim(ctx, algorithm, topology):
 
     simulator = Simulator(algorithm_behavior, environment_topology)
     simulator.create_entities()
-
-    # for e in simulator.entities:
-    #     print (e.id, "\n", e.ip, "\n", e.in_port, "\n", e.out_port, "\n", e.state, "\n", e.behavior, "\n", e.neighbours)
     simulator.simulate()

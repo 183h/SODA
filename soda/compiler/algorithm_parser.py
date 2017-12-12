@@ -13,7 +13,6 @@ class AlgorithmParser(object):
     def p_first_section_line(self, p):
         ''' first_section_line : STATES EQUALS states_list SEMICOLON
                                | REGISTERS EQUALS register_list SEMICOLON
-                               | INIT EQUALS init_list SEMICOLON
                                | TERM EQUALS term_list SEMICOLON'''
 
     def p_states_list(self, p):
@@ -31,14 +30,6 @@ class AlgorithmParser(object):
     def p_register_term(self, p):
         ''' register_term : NAME'''
         self.behavior.registers.append(p[1])
-
-    def p_init_list(self, p):
-        ''' init_list : init_term
-                      | init_list COMMA init_term'''
-
-    def p_init_term(self, p):
-        ''' init_term : NAME'''
-        self.behavior.init_states.append(p[1])
 
     def p_term_list(self, p):
         ''' term_list : term_term
@@ -64,9 +55,9 @@ class AlgorithmParser(object):
 
     def p_command(self, p):
         ''' command : READ
-                    | SEND
-                    | BECOME'''
-        p[0] = p[1]
+                    | SEND LPAREN NAME RPAREN
+                    | BECOME LPAREN NAME RPAREN'''
+        p[0] = (p[1], p[3] if 3 < len(p) else None)
 
     def p_error(self, p):
         print("Syntax error in input! -> {}".format(p))

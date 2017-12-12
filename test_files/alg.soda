@@ -1,15 +1,14 @@
-STATES = INITIATOR, IDLE, DONE;
 TERM = DONE;
-INIT = INITIATOR, IDLE;
 
 INITIATOR
 	begin
-		SEND
-		BECOME
+		SEND(hello)
+		BECOME(DONE)
 	end
 	
 IDLE
 	begin
 		READ
-		BECOME
+		SEND(world)
+		BECOME(DONE)
 	end

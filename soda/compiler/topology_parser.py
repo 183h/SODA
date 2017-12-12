@@ -11,9 +11,9 @@ class TopologyParser(object):
                      | entity_line entities'''
 
     def p_first_section_line(self, p):
-        ''' entity_line : DIGIT SEMICOLON IP SEMICOLON DIGIT DIGIT SEMICOLON neighbours SEMICOLON NAME'''
-        self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5], "out_port": p[6], "state": p[10]}
-        self.topology.neighbours[p[1]] = [{n: {"ip": None, "in_port": None, "out_port": None}} for n in self.entity_neighbours]
+        ''' entity_line : DIGIT SEMICOLON IP SEMICOLON DIGIT SEMICOLON neighbours SEMICOLON NAME'''
+        self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5], "state": p[9]}
+        self.topology.neighbours[p[1]] = [{n: {"ip": None, "in_port": None}} for n in self.entity_neighbours]
         self.entity_neighbours = []
 
     def p_neighbours(self, p):
@@ -53,6 +53,5 @@ class TopologyParser(object):
                 for neighbour in neighbours:
                     neighbours[neighbour]["ip"] = self.topology.entities[neighbour]["ip"]
                     neighbours[neighbour]["in_port"] = self.topology.entities[neighbour]["in_port"]
-                    neighbours[neighbour]["out_port"] = self.topology.entities[neighbour]["out_port"]
 
         print ("Ended topology parsing...")

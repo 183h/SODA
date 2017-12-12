@@ -14,10 +14,10 @@ class Simulator(object):
                 e,
                 self.topology.entities[e]["ip"],
                 self.topology.entities[e]["in_port"],
-                self.topology.entities[e]["out_port"],
                 self.topology.entities[e]["state"],
+                self.behavior.term_states,
                 self.behavior.states_behaviors,
-                self.topology.neighbours[e]
+                self.topology.neighbours[e],
             )
 
             self.entities.append(entity)

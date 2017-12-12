@@ -4,19 +4,21 @@ from soda.helpers import open_file
 
 class AlgorithmLexer(object):
     keywords = (
-        'INIT', 'TERM', 'STATES', 'REGISTERS',
+        'TERM', 'STATES', 'REGISTERS',
         'begin', 'end',
         'SEND', 'BECOME', 'READ'
     )
 
     tokens = keywords + (
-        'NAME', 'EQUALS', 'COMMA', 'SEMICOLON'
+        'NAME', 'EQUALS', 'COMMA', 'SEMICOLON', 'LPAREN', 'RPAREN'
     )
 
     # Tokens
     t_EQUALS = r'='
     t_COMMA = r','
     t_SEMICOLON = r';'
+    t_LPAREN = r'\('
+    t_RPAREN = r'\)'
 
     # Ignored characters
     t_ignore = ' \t\n'

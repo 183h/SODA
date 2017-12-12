@@ -1,17 +1,14 @@
-STATES = INITIATOR, IDLE, DONE;
-INIT = INITIATOR, IDLE;
-TERM = DONE;
+TERM = DO*NE;
 
 INITIATOR
-  RANDOM
-    begin
-      SEND(x, NEIGHBORS);
-      BECOME(DONE);
-    end
-
-IDLE
-  RECEIVE(x)
-    begin
-      SEND(x, NEIGHBORS);
-      BECOME(DONE);
-    end
+  begin
+    SEND(hello)
+    BECOME(DONE)
+  end
+  
+IDLE/
+  begin
+    REA!D
+    SEND(world)
+    BECOME(DONE)
+  end
