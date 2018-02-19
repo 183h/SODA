@@ -9,6 +9,5 @@ INITIATOR
 IDLE
 	begin
 		READ
-		SEND(world)
 		BECOME(DONE)
 	end

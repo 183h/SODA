@@ -11,13 +11,13 @@ class AlgorithmParser(object):
                           | first_section_line first_section'''
 
     def p_first_section_line(self, p):
-        ''' first_section_line : STATES EQUALS states_list SEMICOLON
-                               | REGISTERS EQUALS register_list SEMICOLON
-                               | TERM EQUALS term_list SEMICOLON'''
+        ''' first_section_line : STATES '=' states_list ';'
+                               | REGISTERS '=' register_list ';'
+                               | TERM '=' term_list ';' '''
 
     def p_states_list(self, p):
         ''' states_list  : state_term
-                         | states_list COMMA state_term'''
+                         | states_list ',' state_term'''
 
     def p_state_term(self, p):
         ''' state_term : NAME'''
@@ -25,7 +25,7 @@ class AlgorithmParser(object):
 
     def p_register_list(self, p):
         ''' register_list : register_term
-                          | register_list COMMA register_term'''
+                          | register_list ',' register_term'''
 
     def p_register_term(self, p):
         ''' register_term : NAME'''
@@ -33,7 +33,7 @@ class AlgorithmParser(object):
 
     def p_term_list(self, p):
         ''' term_list : term_term
-                      | term_list COMMA term_term'''
+                      | term_list ',' term_term'''
 
     def p_term_term(self, p):
         ''' term_term : NAME'''
@@ -55,8 +55,8 @@ class AlgorithmParser(object):
 
     def p_command(self, p):
         ''' command : READ
-                    | SEND LPAREN NAME RPAREN
-                    | BECOME LPAREN NAME RPAREN'''
+                    | SEND '(' NAME ')'
+                    | BECOME '(' NAME ')' '''
         p[0] = (p[1], p[3] if 3 < len(p) else None)
 
     def p_error(self, p):
