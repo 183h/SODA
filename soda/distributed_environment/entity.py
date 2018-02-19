@@ -1,6 +1,9 @@
 from zmq import Context, REP, REQ
 from threading import Thread
 from pickle import dumps, loads
+from logging import getLogger, info
+
+logger = getLogger(__name__)
 
 
 class Entity(Thread):

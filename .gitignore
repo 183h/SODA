@@ -43,3 +43,6 @@ coverage.xml
 # PLY parser output
 parsetab.py
 parser.out
+
+# logging files
+*.log

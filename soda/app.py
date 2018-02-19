@@ -6,6 +6,7 @@ from soda.compiler.topology_parser import TopologyParser
 from soda.distributed_environment.algorithm_behavior import AlgorithmBehavior
 from soda.distributed_environment.topology import Topology
 from soda.simulator import Simulator
+from logging import basicConfig, INFO
 
 
 @click.group()
@@ -16,6 +17,8 @@ def main(ctx):
     ctx.obj['algorithm_lexer'].build()
     ctx.obj['topology_lexer'] = TopologyLexer()
     ctx.obj['topology_lexer'].build()
+
+    basicConfig(filename='simulation.log', filemode='w', level=INFO)
 
 
 @main.command(short_help='Run algorithm lexical analysis.')
