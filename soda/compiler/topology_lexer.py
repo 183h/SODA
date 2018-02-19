@@ -10,7 +10,6 @@ class TopologyLexer(object):
     literals = [';']
 
     # Tokens
-    # t_SEMICOLON = r';'
     t_IP = r'(?:[0-9]{1,3}\.){3}[0-9]{1,3}'
     t_DIGIT = r'[0-9][0-9]*'
 

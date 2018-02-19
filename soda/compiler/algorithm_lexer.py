@@ -15,13 +15,6 @@ class AlgorithmLexer(object):
 
     literals = ['=', ',', ';', '(', ')']
 
-    # Tokens
-    # t_EQUALS = r'='
-    # t_COMMA = r','
-    # t_SEMICOLON = r';'
-    # t_LPAREN = r'\('
-    # t_RPAREN = r'\)'
-
     # Ignored characters
     t_ignore = ' \t\n'
 
