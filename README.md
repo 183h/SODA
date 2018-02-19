@@ -28,6 +28,9 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  lex    run lexical analysis
-  parse  run parsing
+  lexalg    Run algorithm lexical analysis.
+  lextop    Run topology lexical analysis.
+  parsealg  Run algorithm parsing.
+  parsetop  Run topology parsing.
+  sim       Run simulation.
 ```
