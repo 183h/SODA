@@ -15,10 +15,10 @@ SODA can be installed via **pip** with command, executed inside clonned reposito
 
 Afterwards it can be run in terminal via:
 
-`$ soda`
+`soda`
 
 ## Usage
-Run `$soda --help`.
+Run `soda --help`.
 
 
 ```
