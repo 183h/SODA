@@ -24,7 +24,7 @@ class Entity(Thread):
         def read():
             pickled_message = self.in_socket.recv()
             message, entity_id = loads(pickled_message)
-            print(self.id, "Received:", message, "| From:", entity_id)
+            logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(self.id, message, entity_id))
 
         def send(message):
             for n in self.neighbours:
@@ -36,11 +36,11 @@ class Entity(Thread):
                     out_socket.send(pickled_message)
                     out_socket.disconnect("tcp://localhost:%s" % n[e]["in_port"])
                     out_socket.close()
-                    print(self.id, "Sended:", message, "| To:", e)
+                    logger.info("Entity: {0} | Action: SEND | Message : {1} | To entity : {2} ".format(self.id, message, e))
 
         def become(new_state):
+            logger.info("Entity: {0} | Action: BECOME | Old state : {1} | New state : {2} ".format(self.id, self.state, new_state))
             self.state = new_state
-            print(self.id, "Changed state to:", new_state)
 
         self.actions = {
             "READ": read,

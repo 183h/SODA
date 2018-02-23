@@ -1,5 +1,8 @@
 import ply.lex as lex
 from soda.helpers import open_file
+from logging import getLogger, info
+
+logger = getLogger(__name__)
 
 
 class AlgorithmLexer(object):
@@ -25,7 +28,7 @@ class AlgorithmLexer(object):
         return t
 
     def t_error(self, t):
-        print ("Illegal character {0} at line {1}".format(t.value[0], t.lineno))
+        logger.info("Illegal character {0} at line {1}".format(t.value[0], t.lineno))
         t.lexer.skip(1)
 
     def build(self, **kwargs):
@@ -33,7 +36,7 @@ class AlgorithmLexer(object):
 
     @open_file
     def lexical_analysis(self, file):
-        print ("Started algorithm lexical analysis...")
+        logger.info("Started algorithm lexical analysis")
 
         for line in file:
             try:
@@ -46,6 +49,6 @@ class AlgorithmLexer(object):
                 token = self._lexer.token()
                 if not token:
                     break
-                print ("  ", token)
+                logger.info("{0}".format(token))
 
-        print ("Ended algorithm lexical analysis...")
+        logger.info("Ended algorithm lexical analysis")

@@ -1,5 +1,8 @@
 import ply.yacc as yacc
 from soda.helpers import open_file
+from logging import getLogger, info
+
+logger = getLogger(__name__)
 
 
 class AlgorithmParser(object):
@@ -60,13 +63,13 @@ class AlgorithmParser(object):
         p[0] = (p[1], p[3] if 3 < len(p) else None)
 
     def p_error(self, p):
-        print("Syntax error in input! -> {}".format(p))
+        logger.info("Syntax error in input! -> {}".format(p))
 
     def build(self, lexer, behavior):
         self.lexer = lexer
         self.behavior = behavior
         self.tokens = lexer.tokens
-        self._parser = yacc.yacc(module=self)
+        self._parser = yacc.yacc(module=self, debug=False)
         self.state_commands = []
 
     @open_file
@@ -82,6 +85,6 @@ class AlgorithmParser(object):
                 except StopIteration:
                     return None
 
-        print ("Started algorithm parsing...")
+        logger.info("Started algorithm parsing")
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
-        print ("Ended algorithm parsing...")
+        logger.info("Ended algorithm parsing")

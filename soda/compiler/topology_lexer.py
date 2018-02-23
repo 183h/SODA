@@ -1,5 +1,8 @@
 import ply.lex as lex
 from soda.helpers import open_file
+from logging import getLogger, info
+
+logger = getLogger(__name__)
 
 
 class TopologyLexer(object):
@@ -21,7 +24,7 @@ class TopologyLexer(object):
         return t
 
     def t_error(self, t):
-        print ("Illegal character {0} at line {1}".format(t.value[0], t.lineno))
+        logger.info("Illegal character {0} at line {1}".format(t.value[0], t.lineno))
         t.lexer.skip(1)
 
     def build(self, **kwargs):
@@ -29,7 +32,7 @@ class TopologyLexer(object):
 
     @open_file
     def lexical_analysis(self, file):
-        print ("Started topology lexical analysis...")
+        logger.info("Started topology lexical analysis")
 
         for line in file:
             try:
@@ -44,4 +47,4 @@ class TopologyLexer(object):
                     break
                 print ("  ", token)
 
-        print ("Ended topology lexical analysis...")
+        logger.info("Ended topology lexical analysis...")

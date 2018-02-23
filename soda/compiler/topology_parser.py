@@ -1,5 +1,8 @@
 import ply.yacc as yacc
 from soda.helpers import open_file
+from logging import getLogger, info
+
+logger = getLogger(__name__)
 
 
 class TopologyParser(object):
@@ -22,13 +25,13 @@ class TopologyParser(object):
         self.entity_neighbours.append(p[1])
 
     def p_error(self, p):
-        print("Syntax error in input! -> {}".format(p))
+        logger.info("Syntax error in input! -> {}".format(p))
 
     def build(self, lexer, topology):
         self.lexer = lexer
         self.topology = topology
         self.tokens = lexer.tokens
-        self._parser = yacc.yacc(module=self)
+        self._parser = yacc.yacc(module=self, debug=False)
         self.entity_neighbours = []
 
     @open_file
@@ -44,7 +47,7 @@ class TopologyParser(object):
                 except StopIteration:
                     return None
 
-        print ("Started topology parsing...")
+        logger.info("Started topology parsing")
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
 
         # update entities neighbours with ip, in_port
@@ -54,4 +57,4 @@ class TopologyParser(object):
                     neighbours[neighbour]["ip"] = self.topology.entities[neighbour]["ip"]
                     neighbours[neighbour]["in_port"] = self.topology.entities[neighbour]["in_port"]
 
-        print ("Ended topology parsing...")
+        logger.info("Ended topology parsing")

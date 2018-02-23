@@ -12,13 +12,13 @@ from logging import basicConfig, INFO
 @click.group()
 @click.pass_context
 def main(ctx):
+    basicConfig(filename='simulation.log', filemode='w', level=INFO)
+
     ctx.obj = {}
     ctx.obj['algorithm_lexer'] = AlgorithmLexer()
     ctx.obj['algorithm_lexer'].build()
     ctx.obj['topology_lexer'] = TopologyLexer()
     ctx.obj['topology_lexer'].build()
-
-    basicConfig(filename='simulation.log', filemode='w', level=INFO)
 
 
 @main.command(short_help='Run algorithm lexical analysis.')
