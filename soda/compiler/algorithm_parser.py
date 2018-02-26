@@ -57,10 +57,24 @@ class AlgorithmParser(object):
         self.state_commands.append(p[1])
 
     def p_command(self, p):
-        ''' command : READ '(' NAME ')'
-                    | SEND '(' NAME ')'
-                    | BECOME '(' NAME ')' '''
-        p[0] = (p[1], p[3] if 3 < len(p) else None)
+        ''' command : READ '(' arguments ')'
+                    | SEND '(' arguments ')'
+                    | BECOME '(' arguments ')' '''
+        # p[0] = (p[1], p[3] if 3 < len(p) else None)
+        p[0] = (p[1], self.arguments)
+        self.arguments = []
+
+    def p_arguments(self, p):
+        ''' arguments : arg
+                      | arguments ',' arg'''
+
+    def p_arg(self, p):
+        ''' arg : NAME
+                | '''
+        try:
+            self.arguments.append(p[1])
+        except IndexError:
+            self.arguments = None
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -71,6 +85,7 @@ class AlgorithmParser(object):
         self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self, debug=False)
         self.state_commands = []
+        self.arguments = []
 
     @open_file
     def parsing(self, file):

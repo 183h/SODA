@@ -8,7 +8,10 @@ def open_file(func):
 
 
 def support_arguments(func):
-    def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
+    def wrapper(args):
+        if args is None:
+            func()
+        else:
+            func(*args)
 
     return wrapper
