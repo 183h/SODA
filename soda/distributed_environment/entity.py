@@ -68,3 +68,6 @@ class Entity(Thread):
             for a in self.behaviors[current_state]:
                 action, arguments = a
                 self.actions[action](arguments)
+
+                if self.state in self.term_states:
+                    break
