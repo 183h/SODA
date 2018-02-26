@@ -8,6 +8,6 @@ INITIATOR
 	
 IDLE
 	begin
-		READ
+		READ(hellod)
 		BECOME(DONE)
 	end

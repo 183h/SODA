@@ -1,6 +1,6 @@
 import ply.lex as lex
 from soda.helpers import open_file
-from logging import getLogger, info
+from logging import getLogger
 
 logger = getLogger(__name__)
 

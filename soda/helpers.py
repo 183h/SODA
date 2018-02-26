@@ -5,3 +5,10 @@ def open_file(func):
         file.close()
 
     return wrapper
+
+
+def support_arguments(func):
+    def wrapper(*args, **kwargs):
+        func(*args, **kwargs)
+
+    return wrapper

@@ -1,6 +1,6 @@
 import ply.yacc as yacc
 from soda.helpers import open_file
-from logging import getLogger, info
+from logging import getLogger
 
 logger = getLogger(__name__)
 
@@ -57,7 +57,7 @@ class AlgorithmParser(object):
         self.state_commands.append(p[1])
 
     def p_command(self, p):
-        ''' command : READ
+        ''' command : READ '(' NAME ')'
                     | SEND '(' NAME ')'
                     | BECOME '(' NAME ')' '''
         p[0] = (p[1], p[3] if 3 < len(p) else None)
