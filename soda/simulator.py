@@ -18,6 +18,7 @@ class Simulator(object):
                 self.behavior.term_states,
                 self.behavior.states_behaviors,
                 self.topology.neighbours[e],
+                self.behavior.registers
             )
 
             self.entities.append(entity)

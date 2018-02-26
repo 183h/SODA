@@ -32,7 +32,7 @@ class AlgorithmParser(object):
 
     def p_register_term(self, p):
         ''' register_term : NAME'''
-        self.behavior.registers.append(p[1])
+        self.behavior.registers[p[1]] = None
 
     def p_term_list(self, p):
         ''' term_list : term_term
