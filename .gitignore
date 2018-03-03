@@ -51,4 +51,4 @@ parser.out
 .idea/
 
 # test input
-test_files/
+testFiles/
