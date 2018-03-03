@@ -23,7 +23,7 @@ class AlgorithmParser(object):
                          | states_list ',' state_term'''
 
     def p_state_term(self, p):
-        ''' state_term : NAME'''
+        ''' state_term : IDENTIFIER'''
         self.behavior.states.append(p[1])
 
     def p_register_list(self, p):
@@ -31,7 +31,7 @@ class AlgorithmParser(object):
                           | register_list ',' register_term'''
 
     def p_register_term(self, p):
-        ''' register_term : NAME'''
+        ''' register_term : IDENTIFIER'''
         self.behavior.registers[p[1]] = None
 
     def p_term_list(self, p):
@@ -39,7 +39,7 @@ class AlgorithmParser(object):
                       | term_list ',' term_term'''
 
     def p_term_term(self, p):
-        ''' term_term : NAME'''
+        ''' term_term : IDENTIFIER'''
         self.behavior.term_states.append(p[1])
 
     def p_second_section(self, p):
@@ -47,7 +47,7 @@ class AlgorithmParser(object):
                           | second_section_state_behavior second_section'''
 
     def p_second_section_state_behavior(self, p):
-        ''' second_section_state_behavior : NAME begin commands end'''
+        ''' second_section_state_behavior : IDENTIFIER begin commands end'''
         self.behavior.states_behaviors[p[1]] = self.state_commands[::-1]
         self.state_commands = []
 
@@ -57,24 +57,27 @@ class AlgorithmParser(object):
         self.state_commands.append(p[1])
 
     def p_command(self, p):
-        ''' command : READ '(' arguments ')'
-                    | SEND '(' arguments ')'
-                    | BECOME '(' arguments ')' '''
-        # p[0] = (p[1], p[3] if 3 < len(p) else None)
-        p[0] = (p[1], self.arguments)
-        self.arguments = []
+        ''' command : READ '(' read_arguments ')'
+                    | SEND '(' send_arguments ')'
+                    | BECOME '(' become_arguments ')' '''
+        p[0] = p[3]
 
-    def p_arguments(self, p):
-        ''' arguments : arg
-                      | arguments ',' arg'''
+    #     try:
+    #         self.arguments.append(p[1])
+    #     except IndexError:
+    #         self.arguments = None
 
-    def p_arg(self, p):
-        ''' arg : NAME
-                | '''
-        try:
-            self.arguments.append(p[1])
-        except IndexError:
-            self.arguments = None
+    def p_read_arguments(self, p):
+        ''' read_arguments : STRING '''
+        p[0] = (p[1], )
+
+    def p_send_arguments(self, p):
+        ''' send_arguments : STRING '''
+        p[0] = (p[1],)
+
+    def p_become_arguments(self, p):
+        ''' become_arguments : IDENTIFIER '''
+        p[0] = (p[1],)
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -85,7 +88,6 @@ class AlgorithmParser(object):
         self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self, debug=False)
         self.state_commands = []
-        self.arguments = []
 
     @open_file
     def parsing(self, file):

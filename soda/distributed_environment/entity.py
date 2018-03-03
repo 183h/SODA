@@ -28,7 +28,7 @@ class Entity(Thread):
         poller.register(self.in_socket, POLLIN)
 
         @support_arguments
-        def read(message_to_receive):
+        def read(message):
             while True:
                 socks = dict(poller.poll())
 
@@ -36,7 +36,7 @@ class Entity(Thread):
                     pickled_received_message = self.in_socket.recv(flags=DONTWAIT)
                     received_message, sender_entity_id = loads(pickled_received_message)
 
-                    if received_message == message_to_receive:
+                    if received_message == message:
                         logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(self.id, received_message, sender_entity_id))
                         break
 

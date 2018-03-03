@@ -13,7 +13,7 @@ class AlgorithmLexer(object):
     )
 
     tokens = keywords + (
-        'NAME',
+        'IDENTIFIER', 'STRING'
     )
 
     literals = ['=', ',', ';', '(', ')']
@@ -21,10 +21,14 @@ class AlgorithmLexer(object):
     # Ignored characters
     t_ignore = ' \t\n'
 
-    def t_NAME(self, t):
+    def t_IDENTIFIER(self, t):
         r'[a-zA-Z][a-zA-Z]*'
         if t.value in self.keywords:  # is this a keyword?
             t.type = t.value
+        return t
+
+    def t_STRING(self, t):
+        r'"(?:[^"\\]|\\.)*"'
         return t
 
     def t_error(self, t):
