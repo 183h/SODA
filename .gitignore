@@ -46,3 +46,9 @@ parser.out
 
 # logging files
 *.log
+
+# PyCharm
+.idea/
+
+# test input
+test_files/
