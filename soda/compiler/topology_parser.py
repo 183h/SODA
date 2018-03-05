@@ -47,6 +47,7 @@ class TopologyParser(object):
                 except StopIteration:
                     return None
 
+
         logger.info("Started topology parsing")
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
 
@@ -57,4 +58,6 @@ class TopologyParser(object):
                     neighbours[neighbour]["ip"] = self.topology.entities[neighbour]["ip"]
                     neighbours[neighbour]["in_port"] = self.topology.entities[neighbour]["in_port"]
 
+        logger.info(self.topology.entities)
+        logger.info(self.topology.neighbours)
         logger.info("Ended topology parsing")

@@ -13,7 +13,7 @@ class AlgorithmLexer(object):
     )
 
     tokens = keywords + (
-        'IDENTIFIER', 'STRING'
+        'IDENTIFIER', 'EVAL'
     )
 
     literals = ['=', ',', ';', '(', ')']
@@ -27,8 +27,12 @@ class AlgorithmLexer(object):
             t.type = t.value
         return t
 
-    def t_STRING(self, t):
-        r'"(?:[^"\\]|\\.)*"'
+    # def t_STRING(self, t):
+    #     r'"(?:[^"\\]|\\.)*"'
+    #     return t
+
+    def t_EVAL(self, t):
+        r'([a-zA-Z][a-zA-Z]*|"(?:[^"\\]|\\.)*")(\+[a-zA-Z][a-zA-Z]*|\+"(?:[^"\\]|\\.)*"){0,}'
         return t
 
     def t_error(self, t):

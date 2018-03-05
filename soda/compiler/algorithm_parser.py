@@ -60,7 +60,7 @@ class AlgorithmParser(object):
         ''' command : READ '(' read_arguments ')'
                     | SEND '(' send_arguments ')'
                     | BECOME '(' become_arguments ')' '''
-        p[0] = p[3]
+        p[0] = (p[1], p[3])
 
     #     try:
     #         self.arguments.append(p[1])
@@ -68,11 +68,11 @@ class AlgorithmParser(object):
     #         self.arguments = None
 
     def p_read_arguments(self, p):
-        ''' read_arguments : STRING '''
+        ''' read_arguments : EVAL '''
         p[0] = (p[1], )
 
     def p_send_arguments(self, p):
-        ''' send_arguments : STRING '''
+        ''' send_arguments : EVAL '''
         p[0] = (p[1],)
 
     def p_become_arguments(self, p):
@@ -103,5 +103,10 @@ class AlgorithmParser(object):
                     return None
 
         logger.info("Started algorithm parsing")
+
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
+
+        logger.info(self.behavior.registers)
+        logger.info(self.behavior.term_states)
+        logger.info(self.behavior.states_behaviors)
         logger.info("Ended algorithm parsing")
