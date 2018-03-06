@@ -29,6 +29,8 @@ class Entity(Thread):
 
         @support_arguments
         def read(message):
+            message = eval(message)
+
             while True:
                 socks = dict(poller.poll())
 
@@ -42,6 +44,8 @@ class Entity(Thread):
 
         @support_arguments
         def send(message):
+            message = eval(message)
+
             for n in self.neighbours:
                 for e in n:
                     out_socket = context.socket(REQ)
