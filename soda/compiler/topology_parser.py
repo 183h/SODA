@@ -47,8 +47,6 @@ class TopologyParser(object):
                 except StopIteration:
                     return None
 
-
-        logger.info("Started topology parsing")
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
 
         # update entities neighbours with ip, in_port
@@ -60,4 +58,3 @@ class TopologyParser(object):
 
         logger.info(self.topology.entities)
         logger.info(self.topology.neighbours)
-        logger.info("Ended topology parsing")

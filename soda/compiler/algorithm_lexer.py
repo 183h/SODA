@@ -44,8 +44,6 @@ class AlgorithmLexer(object):
 
     @open_file
     def lexical_analysis(self, file):
-        logger.info("Started algorithm lexical analysis")
-
         for line in file:
             try:
                 lex_input = line
@@ -58,5 +56,3 @@ class AlgorithmLexer(object):
                 if not token:
                     break
                 logger.info("{0}".format(token))
-
-        logger.info("Ended algorithm lexical analysis")
