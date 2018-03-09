@@ -3,13 +3,12 @@ from threading import Thread
 from pickle import dumps, loads
 from logging import getLogger
 from soda.helpers import support_arguments
-from copy import deepcopy
 
 logger = getLogger(__name__)
 
 
 class Entity(Thread):
-    def __init__(self, id, ip, in_port, state, term_states, behaviors, neighbours, registers):
+    def __init__(self, id, ip, in_port, state, term_states, behaviors, neighbours):
         Thread.__init__(self)
         self.id = id
         self.ip = ip
@@ -18,7 +17,6 @@ class Entity(Thread):
         self.term_states = term_states
         self.behaviors = behaviors
         self.neighbours = neighbours
-        self.registers = deepcopy(registers)
 
         context = Context()
         self.in_socket = context.socket(REP)

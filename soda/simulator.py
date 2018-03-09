@@ -17,9 +17,12 @@ class Simulator(object):
                 self.topology.entities[e]["state"],
                 self.behavior.term_states,
                 self.behavior.states_behaviors,
-                self.topology.neighbours[e],
-                self.behavior.registers
+                self.topology.neighbours[e]
             )
+
+            # initiate attributes serving as registers
+            for r in self.behavior.registers:
+                setattr(entity, str(r), None)
 
             self.entities.append(entity)
 
