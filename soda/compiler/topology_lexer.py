@@ -32,8 +32,6 @@ class TopologyLexer(object):
 
     @open_file
     def lexical_analysis(self, file):
-        logger.info("Started topology lexical analysis")
-
         for line in file:
             try:
                 lex_input = line
@@ -45,6 +43,4 @@ class TopologyLexer(object):
                 token = self._lexer.token()
                 if not token:
                     break
-                print ("  ", token)
-
-        logger.info("Ended topology lexical analysis...")
+                logger.info("{0}".format(token))

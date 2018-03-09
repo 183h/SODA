@@ -68,9 +68,11 @@ class Entity(Thread):
         while self.state not in self.term_states:
             current_state = self.state
 
-            for a in self.behaviors[current_state]:
-                action, arguments = a
+            n = self.behaviors[current_state].head
+            while n is not None:
+                action, arguments = n.action, n.arguments
                 self.actions[action](arguments)
+                n = n.next
 
                 if self.state in self.term_states:
                     break

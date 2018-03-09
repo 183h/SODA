@@ -1,6 +1,7 @@
 import ply.yacc as yacc
 from soda.helpers import open_file
 from logging import getLogger
+from soda.distributed_environment.behavior import Behavior, Node
 
 logger = getLogger(__name__)
 
@@ -48,8 +49,8 @@ class AlgorithmParser(object):
 
     def p_second_section_state_behavior(self, p):
         ''' second_section_state_behavior : IDENTIFIER begin commands end'''
-        self.behavior.states_behaviors[p[1]] = self.state_commands[::-1]
-        self.state_commands = []
+        self.behavior.states_behaviors[p[1]] = self.test
+        self.test = Behavior()
 
     def p_commands(self, p):
         ''' commands : command
@@ -61,11 +62,7 @@ class AlgorithmParser(object):
                     | SEND '(' send_arguments ')'
                     | BECOME '(' become_arguments ')' '''
         p[0] = (p[1], p[3])
-
-    #     try:
-    #         self.arguments.append(p[1])
-    #     except IndexError:
-    #         self.arguments = None
+        self.test.insert(Node(p[1], p[3]))
 
     def p_read_arguments(self, p):
         ''' read_arguments : EVAL '''
@@ -88,6 +85,7 @@ class AlgorithmParser(object):
         self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self, debug=False)
         self.state_commands = []
+        self.test = Behavior()
 
     @open_file
     def parsing(self, file):
@@ -102,11 +100,10 @@ class AlgorithmParser(object):
                 except StopIteration:
                     return None
 
-        logger.info("Started algorithm parsing")
-
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
 
         logger.info(self.behavior.registers)
         logger.info(self.behavior.term_states)
-        logger.info(self.behavior.states_behaviors)
-        logger.info("Ended algorithm parsing")
+
+        for b in self.behavior.states_behaviors:
+            logger.info("{0} -> {1}".format(b, self.behavior.states_behaviors[b]))
