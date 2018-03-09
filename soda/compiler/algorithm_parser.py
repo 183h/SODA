@@ -33,7 +33,7 @@ class AlgorithmParser(object):
 
     def p_register_term(self, p):
         ''' register_term : IDENTIFIER'''
-        self.behavior.registers[p[1]] = None
+        self.behavior.registers.append(p[1])
 
     def p_term_list(self, p):
         ''' term_list : term_term
@@ -102,8 +102,8 @@ class AlgorithmParser(object):
 
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
 
-        logger.info(self.behavior.registers)
-        logger.info(self.behavior.term_states)
+        logger.info("REGISTERS {0}".format(self.behavior.registers))
+        logger.info("TERM STATES {0}".format(self.behavior.term_states))
 
         for b in self.behavior.states_behaviors:
-            logger.info("{0} -> {1}".format(b, self.behavior.states_behaviors[b]))
+            logger.info("BEHAVIOR [{0} -> {1}]".format(b, self.behavior.states_behaviors[b]))

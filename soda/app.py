@@ -3,7 +3,7 @@ from soda.compiler.algorithm_lexer import AlgorithmLexer
 from soda.compiler.algorithm_parser import AlgorithmParser
 from soda.compiler.topology_lexer import TopologyLexer
 from soda.compiler.topology_parser import TopologyParser
-from soda.distributed_environment.algorithm_behavior import AlgorithmBehavior
+from soda.distributed_environment.algorithm import Algorithm
 from soda.distributed_environment.topology import Topology
 from soda.simulator import Simulator
 from logging import basicConfig, INFO
@@ -44,10 +44,10 @@ def parsealg(ctx, filepath):
         FILEPATH - path to file with algorithm description.
     '''
 
-    behavior = AlgorithmBehavior()
+    algorithm = Algorithm()
     parser = AlgorithmParser()
 
-    parser.build(ctx.obj['algorithm_lexer'], behavior)
+    parser.build(ctx.obj['algorithm_lexer'], algorithm)
     parser.parsing(filepath=filepath)
 
 
@@ -82,27 +82,27 @@ def parsetop(ctx, filepath):
 
 
 @main.command(short_help='Run simulation.')
-@click.argument('ALGORITHM', type=click.Path(exists=True))
-@click.argument('TOPOLOGY', type=click.Path(exists=True))
+@click.argument('ALGORITHM_FILE', type=click.Path(exists=True))
+@click.argument('TOPOLOGY_FILE', type=click.Path(exists=True))
 @click.pass_context
-def sim(ctx, algorithm, topology):
+def sim(ctx, algorithm_file, topology_file):
     '''
     Compile algorithm, topology and start simulation.
 
         FILEPATH - path to file with topology description.
     '''
 
-    algorithm_behavior = AlgorithmBehavior()
+    algorithm = Algorithm()
     algorithm_parser = AlgorithmParser()
-    environment_topology = Topology()
+    topology = Topology()
     topology_parser = TopologyParser()
 
-    algorithm_parser.build(ctx.obj['algorithm_lexer'], algorithm_behavior)
-    algorithm_parser.parsing(filepath=algorithm)
+    algorithm_parser.build(ctx.obj['algorithm_lexer'], algorithm)
+    algorithm_parser.parsing(filepath=algorithm_file)
 
-    topology_parser.build(ctx.obj['topology_lexer'], environment_topology)
-    topology_parser.parsing(filepath=topology)
+    topology_parser.build(ctx.obj['topology_lexer'], topology)
+    topology_parser.parsing(filepath=topology_file)
 
-    simulator = Simulator(algorithm_behavior, environment_topology)
+    simulator = Simulator(algorithm, topology)
     simulator.create_entities()
     simulator.simulate()
