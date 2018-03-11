@@ -16,7 +16,7 @@ class Behavior(object):
 
         n = self.head
         while n is not None:
-            str.append(n.action + "(" + " ".join(n.arguments) + ")")
+            str.append(n.action + "(" + " ".join(n.arguments) + ")" + "[" + (n.jump.action if n.jump is not None else '') + "]")
             n = n.next
 
         return ", ".join(str)

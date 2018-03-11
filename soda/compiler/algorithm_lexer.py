@@ -9,7 +9,9 @@ class AlgorithmLexer(object):
     keywords = (
         'TERM', 'STATES', 'REGISTERS',
         'begin', 'end',
-        'SEND', 'BECOME', 'READ'
+        'SEND', 'BECOME', 'READ',
+        'if', 'then', 'endif', 'else',
+        'testcondition'
     )
 
     tokens = keywords + (

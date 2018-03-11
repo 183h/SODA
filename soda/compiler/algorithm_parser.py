@@ -54,27 +54,75 @@ class AlgorithmParser(object):
 
     def p_commands(self, p):
         ''' commands : command
-                     | command commands'''
+                     | command f commands
+
+                      '''
         self.state_commands.append(p[1])
+        if p[1] != 'if':
+            # self.test.insert(Node(p[1][0], p[1][1]))
+            # print("y", p[:])
+            pass
+        else:
+            pass# print("x", p[:])
+        # print(p[:])
+
+    def p_if_cond(self, p):
+        ''' if_cond : testcondition then commands endif'''
+        p[0]='if'
+        # self.test.insert(Node("d", "D"))
+        print(p[:])
+
+    def p_d(self, p):
+        ''' d : if'''
+        node = Node('if'+str(self.c), 'if')
+        self.test.insert(node)
+        self.j = node
+        print("d", self.c)
+        self.c+=1
+        # pass
+
+    def p_f(self, p):
+        ''' f : '''
+        # print("f", p[-1])
+        if p[-1] != 'if':
+            pass
+            print("c")
+            # self.test.insert(Node(p[-1][0], p[-1][1]))
+        else:
+            node = Node('endif'+str(self.c), 'endif')
+            self.test.insert(node)
+            self.j.jump = node
+            print("f", self.c)
+            self.c+=1
 
     def p_command(self, p):
         ''' command : READ '(' read_arguments ')'
                     | SEND '(' send_arguments ')'
-                    | BECOME '(' become_arguments ')' '''
-        p[0] = (p[1], p[3])
-        self.test.insert(Node(p[1], p[3]))
+                    | BECOME '(' become_arguments ')'
+                    | d if_cond
+                    '''
+        try:
+            p[0] = (p[1], p[3])
+            self.test.insert(Node(p[1], p[3]))
+        except:
+            p[0] = 'if'
+        # self.test.insert(Node(p[1], p[3]))
+        # print("y", p[:])
 
     def p_read_arguments(self, p):
         ''' read_arguments : EVAL '''
         p[0] = (p[1], )
+        # print(p[:])
 
     def p_send_arguments(self, p):
         ''' send_arguments : EVAL '''
         p[0] = (p[1],)
+        # print(p[:])
 
     def p_become_arguments(self, p):
         ''' become_arguments : IDENTIFIER '''
         p[0] = (p[1],)
+        # print(p[:])
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -83,9 +131,17 @@ class AlgorithmParser(object):
         self.lexer = lexer
         self.behavior = behavior
         self.tokens = lexer.tokens
-        self._parser = yacc.yacc(module=self, debug=False)
+        self._parser = yacc.yacc(module=self, debug=True)
         self.state_commands = []
         self.test = Behavior()
+        self.j = None
+        self.c = 1
+
+    def reverse_list(self, head):
+        new_head = None
+        while head:
+            head.next, head, new_head = new_head, head.next, head
+        return new_head
 
     @open_file
     def parsing(self, file):
@@ -104,6 +160,8 @@ class AlgorithmParser(object):
 
         logger.info("REGISTERS {0}".format(self.behavior.registers))
         logger.info("TERM STATES {0}".format(self.behavior.term_states))
+
+        # self.behavior.states_behaviors['INITIATOR'].head = self.reverse_list(self.behavior.states_behaviors['INITIATOR'].head)
 
         for b in self.behavior.states_behaviors:
             logger.info("BEHAVIOR [{0} -> {1}]".format(b, self.behavior.states_behaviors[b]))
