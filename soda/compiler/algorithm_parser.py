@@ -1,68 +1,91 @@
 import ply.yacc as yacc
 from soda.helpers import open_file
 from logging import getLogger
-from soda.distributed_environment.behavior import Behavior, Node
+from soda.distributed_environment.behavior import Behavior, ActionNode, IfNode, EndIfNode, ElseNode
 
 logger = getLogger(__name__)
 
 
 class AlgorithmParser(object):
     def p_algorithm(self, p):
-        ''' algorithm : first_section second_section'''
+        ''' algorithm : first_section second_section '''
 
     def p_first_section(self, p):
         ''' first_section : first_section_line
-                          | first_section_line first_section'''
+                          | first_section_line first_section '''
 
     def p_first_section_line(self, p):
         ''' first_section_line : STATES '=' states_list ';'
                                | REGISTERS '=' register_list ';'
-                               | TERM '=' term_list ';' '''
+                               | TERM '=' term_list ';'
+                               | '''
 
     def p_states_list(self, p):
         ''' states_list  : state_term
-                         | states_list ',' state_term'''
+                         | states_list ',' state_term '''
 
     def p_state_term(self, p):
-        ''' state_term : IDENTIFIER'''
-        self.behavior.states.append(p[1])
+        ''' state_term : IDENTIFIER '''
+        self.algorithm.states.append(p[1])
 
     def p_register_list(self, p):
         ''' register_list : register_term
-                          | register_list ',' register_term'''
+                          | register_list ',' register_term '''
 
     def p_register_term(self, p):
-        ''' register_term : IDENTIFIER'''
-        self.behavior.registers.append(p[1])
+        ''' register_term : IDENTIFIER '''
+        self.algorithm.registers.append(p[1])
 
     def p_term_list(self, p):
         ''' term_list : term_term
-                      | term_list ',' term_term'''
+                      | term_list ',' term_term '''
 
     def p_term_term(self, p):
-        ''' term_term : IDENTIFIER'''
-        self.behavior.term_states.append(p[1])
+        ''' term_term : IDENTIFIER '''
+        self.algorithm.term_states.append(p[1])
 
     def p_second_section(self, p):
         ''' second_section : second_section_state_behavior
-                          | second_section_state_behavior second_section'''
+                          | second_section_state_behavior second_section '''
 
     def p_second_section_state_behavior(self, p):
-        ''' second_section_state_behavior : IDENTIFIER begin commands end'''
-        self.behavior.states_behaviors[p[1]] = self.test
-        self.test = Behavior()
+        ''' second_section_state_behavior : IDENTIFIER begin statements end '''
+        self.algorithm.states_behaviors[p[1]] = self.state_behavior
+        self.state_behavior = Behavior()
+        self.jump_ids = 0
 
-    def p_commands(self, p):
-        ''' commands : command
-                     | command commands'''
-        self.state_commands.append(p[1])
+    def p_statements(self, p):
+        ''' statements : statement
+                       | statement statements '''
 
-    def p_command(self, p):
-        ''' command : READ '(' read_arguments ')'
+    def p_statement(self, p):
+        ''' statement : action
+                      | if_statement '''
+
+    def p_if_statement(self, p):
+        ''' if_statement : if if_seen testcondition then statements endif endif_seen
+                         | if if_seen testcondition then statements else else_seen statements endif endif_seen '''
+
+    def p_if_seen(self, p):
+        ''' if_seen : '''
+        self.state_behavior.insert(IfNode())
+
+    def p_endif_seen(self, p):
+        ''' endif_seen : '''
+        self.state_behavior.insert(EndIfNode(self.jump_ids))
+        self.jump_ids += 1
+
+    def p_else_seen(self, p):
+        ''' else_seen : '''
+        self.state_behavior.insert(ElseNode(self.jump_ids))
+        self.jump_ids += 1
+
+    def p_action(self, p):
+        ''' action :  READ '(' read_arguments ')'
                     | SEND '(' send_arguments ')'
                     | BECOME '(' become_arguments ')' '''
         p[0] = (p[1], p[3])
-        self.test.insert(Node(p[1], p[3]))
+        self.state_behavior.insert(ActionNode(p[1], p[3]))
 
     def p_read_arguments(self, p):
         ''' read_arguments : EVAL '''
@@ -78,14 +101,15 @@ class AlgorithmParser(object):
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
+        exit()
 
-    def build(self, lexer, behavior):
+    def build(self, lexer, algorithm):
         self.lexer = lexer
-        self.behavior = behavior
+        self.algorithm = algorithm
         self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self, debug=False)
-        self.state_commands = []
-        self.test = Behavior()
+        self.state_behavior = Behavior()
+        self.jump_ids = 0
 
     @open_file
     def parsing(self, file):
@@ -101,9 +125,44 @@ class AlgorithmParser(object):
                     return None
 
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
+        self.process_condition_scopes()
 
-        logger.info("REGISTERS {0}".format(self.behavior.registers))
-        logger.info("TERM STATES {0}".format(self.behavior.term_states))
+        logger.info("REGISTERS {0}".format(self.algorithm.registers))
+        logger.info("TERM STATES {0}".format(self.algorithm.term_states))
 
-        for b in self.behavior.states_behaviors:
-            logger.info("BEHAVIOR [{0} -> {1}]".format(b, self.behavior.states_behaviors[b]))
+        for s, b in self.algorithm.states_behaviors.items():
+            logger.info("BEHAVIOR [{0} -> \n{1}]".format(s, b))
+
+    def process_condition_scopes(self):
+        for s, b in self.algorithm.states_behaviors.items():
+            n = b.tail
+
+            while n is not None:
+                if type(n) is IfNode:
+                    n1 = n
+
+                    while n1 is not None:
+                        if (type(n1) is EndIfNode
+                                and not n1.scope_processed):
+                            n.jump_endif = n1
+                            n1.scope_processed = True
+                            break
+                        elif (type(n1) is ElseNode
+                                and not n1.scope_processed):
+                            n2 = n1
+
+                            while n2 is not None:
+                                if (type(n2) is EndIfNode
+                                        and not n2.scope_processed):
+                                    n.jump_else = n1
+                                    n.jump_endif = n2
+                                    n1.scope_processed = True
+                                    n2.scope_processed = True
+                                    break
+                                n2 = n2.next
+
+                            break
+
+                        n1 = n1.next
+
+                n = n.previous

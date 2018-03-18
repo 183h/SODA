@@ -9,7 +9,9 @@ class AlgorithmLexer(object):
     keywords = (
         'TERM', 'STATES', 'REGISTERS',
         'begin', 'end',
-        'SEND', 'BECOME', 'READ'
+        'SEND', 'BECOME', 'READ',
+        'if', 'then', 'endif', 'else',
+        'testcondition'
     )
 
     tokens = keywords + (
@@ -38,6 +40,7 @@ class AlgorithmLexer(object):
     def t_error(self, t):
         logger.info("Illegal character {0} at line {1}".format(t.value[0], t.lineno))
         t.lexer.skip(1)
+        exit()
 
     def build(self, **kwargs):
         self._lexer = lex.lex(module=self, **kwargs)
