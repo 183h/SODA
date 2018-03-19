@@ -17,8 +17,7 @@ class AlgorithmParser(object):
     def p_first_section_line(self, p):
         ''' first_section_line : STATES '=' states_list ';'
                                | REGISTERS '=' register_list ';'
-                               | TERM '=' term_list ';'
-                               | '''
+                               | TERM '=' term_list ';' '''
 
     def p_states_list(self, p):
         ''' states_list  : state_term
@@ -63,12 +62,16 @@ class AlgorithmParser(object):
                       | if_statement '''
 
     def p_if_statement(self, p):
-        ''' if_statement : if if_seen testcondition then statements endif endif_seen
-                         | if if_seen testcondition then statements else else_seen statements endif endif_seen '''
+        ''' if_statement : if condition if_seen then statements endif endif_seen
+                         | if condition if_seen then statements else else_seen statements endif endif_seen '''
+
+    def p_condition(self, p):
+        ''' condition : EVAL '''
+        p[0] = p[1]
 
     def p_if_seen(self, p):
         ''' if_seen : '''
-        self.state_behavior.insert(IfNode())
+        self.state_behavior.insert(IfNode(p[-1]))
 
     def p_endif_seen(self, p):
         ''' endif_seen : '''
@@ -125,7 +128,7 @@ class AlgorithmParser(object):
                     return None
 
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
-        self.process_condition_scopes()
+        self.process_conditions_scopes()
 
         logger.info("REGISTERS {0}".format(self.algorithm.registers))
         logger.info("TERM STATES {0}".format(self.algorithm.term_states))
@@ -133,7 +136,7 @@ class AlgorithmParser(object):
         for s, b in self.algorithm.states_behaviors.items():
             logger.info("BEHAVIOR [{0} -> \n{1}]".format(s, b))
 
-    def process_condition_scopes(self):
+    def process_conditions_scopes(self):
         for s, b in self.algorithm.states_behaviors.items():
             n = b.tail
 
