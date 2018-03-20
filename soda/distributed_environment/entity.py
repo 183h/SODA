@@ -28,7 +28,7 @@ class Entity(Thread):
 
         @support_arguments
         def read(message):
-            message = eval(message)
+            message = eval(message, {}, self.__dict__) if message is not None else None
 
             while True:
                 socks = dict(poller.poll())
@@ -37,13 +37,13 @@ class Entity(Thread):
                     pickled_received_message = self.in_socket.recv(flags=DONTWAIT)
                     received_message, sender_entity_id_e = loads(pickled_received_message)
 
-                    if received_message == message:
+                    if received_message == message or message is None:
                         logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(self.id_e, received_message, sender_entity_id_e))
                         break
 
         @support_arguments
         def send(message):
-            message = eval(message)
+            message = eval(message, {}, self.__dict__)
 
             for n in self.neighbours:
                 for e in n:
