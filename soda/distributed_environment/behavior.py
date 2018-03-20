@@ -37,7 +37,7 @@ class ActionNode(Node):
         self.arguments = arguments
 
     def __str__(self):
-        return self.action + '[Args(' + (', '.join(self.arguments) if self.arguments is not None else '') + ')]'
+        return self.action + '[Args(' + (', '.join(filter(None, self.arguments)) if self.arguments is not None else '') + ')]'
 
     def execute(self, entity):
         action, arguments = self.action, self.arguments

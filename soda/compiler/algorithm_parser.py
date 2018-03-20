@@ -91,16 +91,21 @@ class AlgorithmParser(object):
         self.state_behavior.insert(ActionNode(p[1], p[3]))
 
     def p_read_arguments(self, p):
-        ''' read_arguments : EVAL '''
+        ''' read_arguments : IDENTIFIER
+                           | NONE '''
         p[0] = (p[1], )
 
     def p_send_arguments(self, p):
-        ''' send_arguments : EVAL '''
+        ''' send_arguments : IDENTIFIER '''
         p[0] = (p[1],)
 
     def p_become_arguments(self, p):
         ''' become_arguments : IDENTIFIER '''
         p[0] = (p[1],)
+
+    def p_NONE(self, p):
+        ''' NONE : '''
+        p[0] = None
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
