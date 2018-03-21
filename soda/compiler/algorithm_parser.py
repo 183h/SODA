@@ -59,7 +59,8 @@ class AlgorithmParser(object):
 
     def p_statement(self, p):
         ''' statement : action
-                      | if_statement '''
+                      | if_statement
+                      | assignment '''
 
     def p_if_statement(self, p):
         ''' if_statement : if condition if_seen then statements endif endif_seen
@@ -107,6 +108,22 @@ class AlgorithmParser(object):
         ''' NONE : '''
         p[0] = None
 
+    def p_assignemnt(self, p):
+        ''' assignment : IDENTIFIER '=' arithmetic_expr '''
+        self.state_behavior.insert(ActionNode('ASSIGN', (p[1] +'='+ ''.join(self.arithmetic_expr[-1]),)))
+        self.arithmetic_expr = []
+
+    def p_arithmetic_expr(self, p):
+        ''' arithmetic_expr : arithmetic_expr '+' arithmetic_expr
+                            | arithmetic_expr '-' arithmetic_expr
+                            | arithmetic_expr '*' arithmetic_expr
+                            | arithmetic_expr '/' arithmetic_expr
+                            | '(' arithmetic_expr ')'
+                            | NUMBER
+                            | IDENTIFIER '''
+        p[0] = p[1]
+        self.arithmetic_expr.append(list(filter(lambda x: x is not None, p[1:])))
+
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
         exit()
@@ -118,6 +135,7 @@ class AlgorithmParser(object):
         self._parser = yacc.yacc(module=self, debug=False)
         self.state_behavior = Behavior()
         self.jump_ids = 0
+        self.arithmetic_expr = []
 
     @open_file
     def parsing(self, file):

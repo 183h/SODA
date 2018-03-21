@@ -21,10 +21,8 @@ class Simulator(object):
             )
 
             # initiate attributes serving as registers
-            c = 0
             for r in self.behavior.registers:
-                setattr(entity, str(r), c)
-                c += 1
+                setattr(entity, str(r), None)
 
             self.entities.append(entity)
 
