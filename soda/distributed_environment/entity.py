@@ -62,10 +62,15 @@ class Entity(Thread):
             if self.state in self.term_states:
                 exit()
 
+        @support_arguments
+        def assign(expression):
+            exec(expression, {}, self.__dict__)
+
         self.actions = {
             "READ": read,
             "SEND": send,
-            "BECOME": become
+            "BECOME": become,
+            "ASSIGN": assign
         }
 
     def run(self):

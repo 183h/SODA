@@ -1,2 +1,6 @@
 TODO add checking if state in became exists in term states definition
 TODO when read has no argument defining message to read then read first message
+TODO add check when using identifier if identifier exists
+TODO novy prikaz log alebo print co proste vypise nejaku vec do terminalu
+TODO ked sa priraduje premenna do premennej nech da deepcopy
+TODO zistit aky scope maju premenne, ci idu napr aj cez rozne stavy alebo rozne spravania v stave, atd

@@ -14,10 +14,10 @@ class AlgorithmLexer(object):
     )
 
     tokens = keywords + (
-        'IDENTIFIER', 'EVAL'
+        'IDENTIFIER', 'EVAL', 'NUMBER'
     )
 
-    literals = ['=', ',', ';', '(', ')']
+    literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/']
 
     # Ignored characters
     t_ignore = ' \t\n'
@@ -34,6 +34,10 @@ class AlgorithmLexer(object):
 
     def t_EVAL(self, t):
         r'([a-zA-Z][a-zA-Z]*|"(?:[^"\\]|\\.)*")(\+[a-zA-Z][a-zA-Z]*|\+"(?:[^"\\]|\\.)*"){0,}'
+        return t
+
+    def t_NUMBER(self, t):
+        r'[1-9]\d*|0'
         return t
 
     def t_error(self, t):
