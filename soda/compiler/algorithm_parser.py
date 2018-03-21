@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from soda.helpers import open_file
+from soda.helpers import open_file, flatten
 from logging import getLogger
 from soda.distributed_environment.behavior import Behavior, ActionNode, IfNode, EndIfNode, ElseNode
 
@@ -109,9 +109,24 @@ class AlgorithmParser(object):
         p[0] = None
 
     def p_assignemnt(self, p):
-        ''' assignment : IDENTIFIER '=' arithmetic_expr '''
-        self.state_behavior.insert(ActionNode('ASSIGN', (p[1] +'='+ ''.join(self.arithmetic_expr[-1]),)))
+        ''' assignment : IDENTIFIER '=' expression '''
+        self.state_behavior.insert(ActionNode('ASSIGN', (p[1] + '=' + self.expression,)))
+        self.expression = None
         self.arithmetic_expr = []
+
+    def p_expression(self, p):
+        ''' expression : arithmetic_expr arithmetic_seen
+                       | string_expr  string_seen '''
+
+    def p_arithmetic_seen(self, p):
+        '''arithmetic_seen : '''
+        ae = flatten(self.arithmetic_expr[-1])
+        ae = list(filter(lambda x: x is not None, ae))
+        self.expression = ''.join(ae)
+
+    def p_string_seen(self, p):
+        '''string_seen : '''
+        self.expression = p[-1]
 
     def p_arithmetic_expr(self, p):
         ''' arithmetic_expr : arithmetic_expr '+' arithmetic_expr
@@ -121,8 +136,12 @@ class AlgorithmParser(object):
                             | '(' arithmetic_expr ')'
                             | NUMBER
                             | IDENTIFIER '''
-        p[0] = p[1]
+        p[0] = p[:]
         self.arithmetic_expr.append(list(filter(lambda x: x is not None, p[1:])))
+
+    def p_string_expr(self, p):
+        ''' string_expr : STRING '''
+        p[0] = p[:]
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -133,9 +152,11 @@ class AlgorithmParser(object):
         self.algorithm = algorithm
         self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self, debug=False)
+
         self.state_behavior = Behavior()
         self.jump_ids = 0
         self.arithmetic_expr = []
+        self.expression = None
 
     @open_file
     def parsing(self, file):
