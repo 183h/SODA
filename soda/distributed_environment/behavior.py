@@ -21,7 +21,7 @@ class Behavior(object):
             str.append(n.__str__())
             n = n.next
 
-        return ",\n".join(str)
+        return ",\n\t".join(str)
 
 
 class Node(object):

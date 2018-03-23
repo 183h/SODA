@@ -8,13 +8,13 @@ logger = getLogger(__name__)
 class AlgorithmLexer(object):
     keywords = (
         'TERM', 'STATES', 'REGISTERS',
-        'begin', 'end',
+        'RANDOM', 'begin', 'end',
         'SEND', 'BECOME', 'READ',
         'if', 'then', 'endif', 'else'
     )
 
     tokens = keywords + (
-        'IDENTIFIER', 'EVAL', 'NUMBER', 'STRING'
+        'IDENTIFIER', 'NUMBER', 'STRING'
     )
 
     literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/']
@@ -32,9 +32,9 @@ class AlgorithmLexer(object):
         r'"(?:[^"\\]|\\.)*"'
         return t
 
-    def t_EVAL(self, t):
-        r'([a-zA-Z][a-zA-Z]*|"(?:[^"\\]|\\.)*")(\+[a-zA-Z][a-zA-Z]*|\+"(?:[^"\\]|\\.)*"){0,}'
-        return t
+    # def t_EVAL(self, t):
+    #     r'([a-zA-Z][a-zA-Z]*|"(?:[^"\\]|\\.)*")(\+[a-zA-Z][a-zA-Z]*|\+"(?:[^"\\]|\\.)*"){0,}'
+    #     return t
 
     def t_NUMBER(self, t):
         r'[1-9]\d*|0'
