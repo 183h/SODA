@@ -65,17 +65,16 @@ class AlgorithmParser(object):
 
     def p_behavior(self, p):
         ''' behavior : initiation_event begin statements end '''
+        # print(p[1])
         self.state_behaviors[p[1]] = self.behavior
         self.behavior = Behavior()
         self.jump_ids = 0
 
     def p_initiation_event(self, p):
-        ''' initiation_event : RANDOM
+        ''' initiation_event : IMPULSE
                              | READ '(' read_arguments ')'  '''
-        try:
-            p[0] = (p[1], p[3])
-        except IndexError:
-            p[0] = (p[1], )
+        p[0] = (p[1], self.read_arguments) if p[1] == 'READ' else p[1]
+        self.read_arguments = ()
 
     def p_statements(self, p):
         ''' statements : statement
@@ -111,17 +110,38 @@ class AlgorithmParser(object):
     def p_action(self, p):
         ''' action : SEND '(' send_arguments ')'
                    | BECOME '(' become_arguments ')' '''
-        p[0] = (p[1], p[3])
-        self.behavior.insert(ActionNode(p[1], p[3]))
+        # p[0] = (p[1], p[3])
+        if p[1] == 'BECOME':
+            self.behavior.insert(ActionNode(p[1], p[3]))
+        if p[1] == 'SEND':
+            self.behavior.insert(ActionNode(p[1], self.send_arguments))
+            self.send_arguments = ()
 
     def p_read_arguments(self, p):
-        ''' read_arguments : IDENTIFIER
+        ''' read_arguments : read_arg
+                           | read_arg ',' read_arguments
                            | NONE '''
-        p[0] = (p[1], )
+
+    def p_read_arg(self, p):
+        ''' read_arg : IDENTIFIER identifier_seen
+                     | STRING '''
+        try:
+            self.read_arguments += ((p[1], p[2]), )
+        except:
+            self.read_arguments += (p[1] , )
+
+    def p_identifier_seen(self, p):
+        ''' identifier_seen : '''
+        p[0] = 'IDENTIFIER'
 
     def p_send_arguments(self, p):
-        ''' send_arguments : IDENTIFIER '''
-        p[0] = (p[1],)
+        ''' send_arguments : send_arg
+                           | send_arg ',' send_arguments '''
+
+    def p_send_args(self, p):
+        ''' send_arg : STRING
+                     | IDENTIFIER '''
+        self.send_arguments += (p[1], )
 
     def p_become_arguments(self, p):
         ''' become_arguments : IDENTIFIER '''
@@ -139,7 +159,7 @@ class AlgorithmParser(object):
 
     def p_expression(self, p):
         ''' expression : arithmetic_expr arithmetic_seen
-                       | string_expr  string_seen '''
+                       | string_expr string_seen '''
 
     def p_arithmetic_seen(self, p):
         '''arithmetic_seen : '''
@@ -164,7 +184,7 @@ class AlgorithmParser(object):
 
     def p_string_expr(self, p):
         ''' string_expr : STRING '''
-        p[0] = p[:]
+        p[0] = p[1]
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -182,6 +202,8 @@ class AlgorithmParser(object):
         self.arithmetic_expr = []
         self.expression = None
         self.state = None
+        self.read_arguments = ()
+        self.send_arguments = ()
 
     @open_file
     def parsing(self, file):
