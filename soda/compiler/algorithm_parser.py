@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from soda.helpers import open_file
+from soda.helpers import open_file, flatten
 from logging import getLogger
 from soda.distributed_environment.behavior import Behavior, ActionNode, IfNode, EndIfNode, ElseNode
 
@@ -44,14 +44,37 @@ class AlgorithmParser(object):
         self.algorithm.term_states.append(p[1])
 
     def p_second_section(self, p):
-        ''' second_section : second_section_state_behavior
-                          | second_section_state_behavior second_section '''
+        ''' second_section : states '''
 
-    def p_second_section_state_behavior(self, p):
-        ''' second_section_state_behavior : IDENTIFIER begin statements end '''
-        self.algorithm.states_behaviors[p[1]] = self.state_behavior
-        self.state_behavior = Behavior()
+    def p_states(self, p):
+        ''' states : IDENTIFIER seen_state states_behaviors
+                   | IDENTIFIER seen_state states_behaviors states '''
+
+    def p_seen_state(self, p):
+        ''' seen_state : '''
+        self.state = p[-1]
+
+    def p_states_behaviors(self, p):
+        ''' states_behaviors : behavior add_behaviors
+                             | behavior states_behaviors '''
+
+    def p_add_behaviors(self, p):
+        ''' add_behaviors : '''
+        self.algorithm.states_behaviors[self.state] = self.state_behaviors
+        self.state_behaviors = {}
+
+    def p_behavior(self, p):
+        ''' behavior : initiation_event begin statements end '''
+        # print(p[1])
+        self.state_behaviors[p[1]] = self.behavior
+        self.behavior = Behavior()
         self.jump_ids = 0
+
+    def p_initiation_event(self, p):
+        ''' initiation_event : IMPULSE
+                             | READ '(' read_arguments ')'  '''
+        p[0] = (p[1], self.read_arguments) if p[1] == 'READ' else p[1]
+        self.read_arguments = ()
 
     def p_statements(self, p):
         ''' statements : statement
@@ -67,38 +90,58 @@ class AlgorithmParser(object):
                          | if condition if_seen then statements else else_seen statements endif endif_seen '''
 
     def p_condition(self, p):
-        ''' condition : EVAL '''
+        ''' condition : STRING '''
         p[0] = p[1]
 
     def p_if_seen(self, p):
         ''' if_seen : '''
-        self.state_behavior.insert(IfNode(p[-1]))
+        self.behavior.insert(IfNode(p[-1]))
 
     def p_endif_seen(self, p):
         ''' endif_seen : '''
-        self.state_behavior.insert(EndIfNode(self.jump_ids))
+        self.behavior.insert(EndIfNode(self.jump_ids))
         self.jump_ids += 1
 
     def p_else_seen(self, p):
         ''' else_seen : '''
-        self.state_behavior.insert(ElseNode(self.jump_ids))
+        self.behavior.insert(ElseNode(self.jump_ids))
         self.jump_ids += 1
 
     def p_action(self, p):
-        ''' action :  READ '(' read_arguments ')'
-                    | SEND '(' send_arguments ')'
-                    | BECOME '(' become_arguments ')' '''
-        p[0] = (p[1], p[3])
-        self.state_behavior.insert(ActionNode(p[1], p[3]))
+        ''' action : SEND '(' send_arguments ')'
+                   | BECOME '(' become_arguments ')' '''
+        # p[0] = (p[1], p[3])
+        if p[1] == 'BECOME':
+            self.behavior.insert(ActionNode(p[1], p[3]))
+        if p[1] == 'SEND':
+            self.behavior.insert(ActionNode(p[1], ('(' + ', '.join(self.send_arguments) + ')', )))
+            self.send_arguments = ()
 
     def p_read_arguments(self, p):
-        ''' read_arguments : IDENTIFIER
+        ''' read_arguments : read_arg
+                           | read_arg ',' read_arguments
                            | NONE '''
-        p[0] = (p[1], )
+
+    def p_read_arg(self, p):
+        ''' read_arg : IDENTIFIER identifier_seen
+                     | STRING '''
+        try:
+            self.read_arguments += ((p[1], p[2]), )
+        except:
+            self.read_arguments += (p[1].replace('"', '') , )
+
+    def p_identifier_seen(self, p):
+        ''' identifier_seen : '''
+        p[0] = 'IDENTIFIER'
 
     def p_send_arguments(self, p):
-        ''' send_arguments : IDENTIFIER '''
-        p[0] = (p[1],)
+        ''' send_arguments : send_arg
+                           | send_arg ',' send_arguments '''
+
+    def p_send_args(self, p):
+        ''' send_arg : STRING
+                     | IDENTIFIER '''
+        self.send_arguments += (p[1], )
 
     def p_become_arguments(self, p):
         ''' become_arguments : IDENTIFIER '''
@@ -109,9 +152,24 @@ class AlgorithmParser(object):
         p[0] = None
 
     def p_assignemnt(self, p):
-        ''' assignment : IDENTIFIER '=' arithmetic_expr '''
-        self.state_behavior.insert(ActionNode('ASSIGN', (p[1] +'='+ ''.join(self.arithmetic_expr[-1]),)))
+        ''' assignment : IDENTIFIER '=' expression '''
+        self.behavior.insert(ActionNode('ASSIGN', (p[1] + '=' + self.expression,)))
+        self.expression = None
         self.arithmetic_expr = []
+
+    def p_expression(self, p):
+        ''' expression : arithmetic_expr arithmetic_seen
+                       | string_expr string_seen '''
+
+    def p_arithmetic_seen(self, p):
+        '''arithmetic_seen : '''
+        ae = flatten(self.arithmetic_expr[-1])
+        ae = list(filter(lambda x: x is not None, ae))
+        self.expression = ''.join(ae)
+
+    def p_string_seen(self, p):
+        '''string_seen : '''
+        self.expression = p[-1]
 
     def p_arithmetic_expr(self, p):
         ''' arithmetic_expr : arithmetic_expr '+' arithmetic_expr
@@ -121,8 +179,12 @@ class AlgorithmParser(object):
                             | '(' arithmetic_expr ')'
                             | NUMBER
                             | IDENTIFIER '''
-        p[0] = p[1]
+        p[0] = p[:]
         self.arithmetic_expr.append(list(filter(lambda x: x is not None, p[1:])))
+
+    def p_string_expr(self, p):
+        ''' string_expr : STRING '''
+        p[0] = p[1]
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -133,9 +195,15 @@ class AlgorithmParser(object):
         self.algorithm = algorithm
         self.tokens = lexer.tokens
         self._parser = yacc.yacc(module=self, debug=False)
-        self.state_behavior = Behavior()
+
+        self.state_behaviors = {}
+        self.behavior = Behavior()
         self.jump_ids = 0
         self.arithmetic_expr = []
+        self.expression = None
+        self.state = None
+        self.read_arguments = ()
+        self.send_arguments = ()
 
     @open_file
     def parsing(self, file):
@@ -156,39 +224,41 @@ class AlgorithmParser(object):
         logger.info("REGISTERS {0}".format(self.algorithm.registers))
         logger.info("TERM STATES {0}".format(self.algorithm.term_states))
 
-        for s, b in self.algorithm.states_behaviors.items():
-            logger.info("BEHAVIOR [{0} -> \n{1}]".format(s, b))
+        for s, bs in self.algorithm.states_behaviors.items():
+            for i, b in bs.items():
+                logger.info("STATE {0} [\n{1} -> \n\t{2}]".format(s, i, b))
 
     def process_conditions_scopes(self):
-        for s, b in self.algorithm.states_behaviors.items():
-            n = b.tail
+        for s, bs in self.algorithm.states_behaviors.items():
+            for i, b in bs.items():
+                n = b.tail
 
-            while n is not None:
-                if type(n) is IfNode:
-                    n1 = n
+                while n is not None:
+                    if type(n) is IfNode:
+                        n1 = n
 
-                    while n1 is not None:
-                        if (type(n1) is EndIfNode
-                                and not n1.scope_processed):
-                            n.jump_endif = n1
-                            n1.scope_processed = True
-                            break
-                        elif (type(n1) is ElseNode
-                                and not n1.scope_processed):
-                            n2 = n1
+                        while n1 is not None:
+                            if (type(n1) is EndIfNode
+                                    and not n1.scope_processed):
+                                n.jump_endif = n1
+                                n1.scope_processed = True
+                                break
+                            elif (type(n1) is ElseNode
+                                    and not n1.scope_processed):
+                                n2 = n1
 
-                            while n2 is not None:
-                                if (type(n2) is EndIfNode
-                                        and not n2.scope_processed):
-                                    n.jump_else = n1
-                                    n.jump_endif = n2
-                                    n1.scope_processed = True
-                                    n2.scope_processed = True
-                                    break
-                                n2 = n2.next
+                                while n2 is not None:
+                                    if (type(n2) is EndIfNode
+                                            and not n2.scope_processed):
+                                        n.jump_else = n1
+                                        n.jump_endif = n2
+                                        n1.scope_processed = True
+                                        n2.scope_processed = True
+                                        break
+                                    n2 = n2.next
 
-                            break
+                                break
 
-                        n1 = n1.next
+                            n1 = n1.next
 
-                n = n.previous
+                    n = n.previous

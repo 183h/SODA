@@ -1,3 +1,6 @@
+from soda.helpers import flatten
+
+
 class Behavior(object):
     def __init__(self, head=None):
         self.head = head
@@ -21,7 +24,7 @@ class Behavior(object):
             str.append(n.__str__())
             n = n.next
 
-        return ",\n".join(str)
+        return ",\n\t".join(str)
 
 
 class Node(object):
@@ -37,7 +40,7 @@ class ActionNode(Node):
         self.arguments = arguments
 
     def __str__(self):
-        return self.action + '[Args(' + (', '.join(filter(None, self.arguments)) if self.arguments is not None else '') + ')]'
+        return self.action + '[Args(' + (', '.join(filter(None, flatten(self.arguments))) if self.arguments is not None else '') + ')]'
 
     def execute(self, entity):
         action, arguments = self.action, self.arguments
