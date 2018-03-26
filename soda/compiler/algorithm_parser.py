@@ -114,7 +114,7 @@ class AlgorithmParser(object):
         if p[1] == 'BECOME':
             self.behavior.insert(ActionNode(p[1], p[3]))
         if p[1] == 'SEND':
-            self.behavior.insert(ActionNode(p[1], self.send_arguments))
+            self.behavior.insert(ActionNode(p[1], ('(' + ', '.join(self.send_arguments) + ')', )))
             self.send_arguments = ()
 
     def p_read_arguments(self, p):
@@ -128,7 +128,7 @@ class AlgorithmParser(object):
         try:
             self.read_arguments += ((p[1], p[2]), )
         except:
-            self.read_arguments += (p[1] , )
+            self.read_arguments += (p[1].replace('"', '') , )
 
     def p_identifier_seen(self, p):
         ''' identifier_seen : '''

@@ -9,6 +9,8 @@ class Simulator(object):
         self.entities = []
 
     def create_entities(self):
+        impulse_counter = 0
+
         for e in self.topology.entities:
             entity = Entity(
                 e,
@@ -20,6 +22,11 @@ class Simulator(object):
                 self.topology.neighbours[e]
             )
 
+            if ('IMPULSE' in self.behavior.states_behaviors[self.topology.entities[e]["state"]]
+                    and impulse_counter < 1):
+                entity.impulse = True
+                impulse_counter += 1
+
             # initiate attributes serving as registers
             for r in self.behavior.registers:
                 setattr(entity, str(r), None)
@@ -28,4 +35,5 @@ class Simulator(object):
 
     def simulate(self):
         for e in self.entities:
+
             e.start()
