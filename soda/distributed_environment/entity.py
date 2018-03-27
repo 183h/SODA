@@ -5,98 +5,98 @@ from logging import getLogger
 from soda.helpers import support_arguments
 from soda.distributed_environment.behavior import ActionNode, IfNode
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class Entity(Thread):
-    def __init__(self, id_e, ip, in_port, state, term_states, states_behaviors, neighbours):
+    def __init__(self, _id, _ip, _in_port, _state, _term_states, _states_behaviors, _neighbours):
         Thread.__init__(self)
-        self.id_e = id_e
-        self.ip = ip
-        self.in_port = in_port
-        self.state = state
-        self.term_states = term_states
-        self.states_behaviors = states_behaviors
-        self.neighbours = neighbours
-        self.impulse = False
+        self._id = _id
+        self._ip = _ip
+        self._in_port = _in_port
+        self._state = _state
+        self._term_states = _term_states
+        self._states_behaviors = _states_behaviors
+        self._neighbours = _neighbours
+        self._impulse = False
 
-        context = Context()
-        self.in_socket = context.socket(DEALER)
-        self.in_socket.bind("tcp://*:%s" % self.in_port)
+        _context = Context()
+        self._in_socket = _context.socket(DEALER)
+        self._in_socket.bind("tcp://*:%s" % self._in_port)
 
-        poller = Poller()
-        poller.register(self.in_socket, POLLIN)
+        _poller = Poller()
+        _poller.register(self._in_socket, POLLIN)
 
-        self.id = int(id_e)
+        self.id = int(_id)
 
 
         def read():
             while True:
-                socks = dict(poller.poll())
+                _socks = dict(_poller.poll())
 
-                if socks.get(self.in_socket) == POLLIN:
-                    pickled_received_message = self.in_socket.recv(flags=DONTWAIT)
-                    received_message, sender_entity_id_e = loads(pickled_received_message)
+                if _socks.get(self._in_socket) == POLLIN:
+                    _pickled_received_message = self._in_socket.recv(flags=DONTWAIT)
+                    _received_message, _sender_entity_id = loads(_pickled_received_message)
 
-                    logger.info("Entity: {0} | Action: RECEIVED | Message : {1} | From entity : {2} ".format(self.id_e,
-                                                                                                         received_message,
-                                                                                                         sender_entity_id_e))
+                    _logger.info("Entity: {0} | Action: RECEIVED | Message : {1} | From entity : {2} ".format(self._id,
+                                                                                                         _received_message,
+                                                                                                         _sender_entity_id))
 
-                    for pattern in list(filter(lambda p: p != 'IMPULSE', self.states_behaviors[self.state])):
+                    for _pattern in list(filter(lambda _p: _p != 'IMPULSE', self._states_behaviors[self._state])):
 
-                        result = []
+                        _result = []
 
-                        if len(pattern[1]) == len(received_message):
-                            for i, j in zip(pattern[1], received_message):
-                                if i == j and type(i) is not tuple:
-                                    result.append(True)
-                                elif i != j and type(i) is not tuple:
-                                    result.append(False)
+                        if len(_pattern[1]) == len(_received_message):
+                            for _i, _j in zip(_pattern[1], _received_message):
+                                if _i == _j and type(_i) is not tuple:
+                                    _result.append(True)
+                                elif _i != _j and type(_i) is not tuple:
+                                    _result.append(False)
                                 else:
-                                    result.append(None)
+                                    _result.append(None)
 
-                            if False not in result:
-                                for i, j in zip(pattern[1], received_message):
-                                    if type(i) is tuple:
-                                        _identifier, _ = i
-                                        _expression = "%s = %s" % (_identifier, j)
+                            if False not in _result:
+                                for _i, _j in zip(_pattern[1], _received_message):
+                                    if type(_i) is tuple:
+                                        _identifier, _ = _i
+                                        _expression = "%s = %s" % (_identifier, _j)
 
-                                        self.actions["ASSIGN"]((_expression, ))
+                                        self._actions["ASSIGN"]((_expression, ))
 
-                                logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(self.id_e, received_message, sender_entity_id_e))
+                                _logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(self._id, _received_message, _sender_entity_id))
 
-                                return pattern
-
-        @support_arguments
-        def send(message):
-            message = eval(str(message), {}, self.__dict__)
-
-            if type(message) is str:
-                message = (message[:], )
-
-            for n in self.neighbours:
-                for e in n:
-                    out_socket = context.socket(DEALER)
-                    out_socket.connect("tcp://localhost:%s" % n[e]["in_port"])
-                    message_content = (message, self.id_e)
-                    pickled_message = dumps(message_content)
-                    out_socket.send(pickled_message, flags=DONTWAIT)
-                    logger.info("Entity: {0} | Action: SEND | Message : {1} | To entity : {2} ".format(self.id_e, message, e))
+                                return _pattern
 
         @support_arguments
-        def become(new_state):
-            logger.info("Entity: {0} | Action: BECOME | Old state : {1} | New state : {2} ".format(self.id_e, self.state, new_state))
-            self.state = new_state
+        def send(_message):
+            _message = eval(str(_message), {}, self.__dict__)
 
-            if self.state in self.term_states:
+            if type(_message) is str:
+                _message = (_message[:], )
+
+            for _n in self._neighbours:
+                for _e in _n:
+                    _out_socket = _context.socket(DEALER)
+                    _out_socket.connect("tcp://localhost:%s" % _n[_e]["in_port"])
+                    _message_content = (_message, self._id)
+                    _pickled_message = dumps(_message_content)
+                    _out_socket.send(_pickled_message, flags=DONTWAIT)
+                    _logger.info("Entity: {0} | Action: SEND | Message : {1} | To entity : {2} ".format(self._id, _message, _e))
+
+        @support_arguments
+        def become(_new_state):
+            _logger.info("Entity: {0} | Action: BECOME | Old state : {1} | New state : {2} ".format(self._id, self._state, _new_state))
+            self._state = _new_state
+
+            if self._state in self._term_states:
                 exit()
 
         @support_arguments
-        def assign(expression):
-            exec(expression, {}, self.__dict__)
-            logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(self.id_e, expression))
+        def assign(_expression):
+            exec(_expression, {}, self.__dict__)
+            _logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(self._id, _expression))
 
-        self.actions = {
+        self._actions = {
             "READ": read,
             "SEND": send,
             "BECOME": become,
@@ -104,22 +104,22 @@ class Entity(Thread):
         }
 
     def run(self):
-        while self.state not in self.term_states:
-            behavior = None
-            current_state = self.state
+        while self._state not in self._term_states:
+            _behavior = None
+            _current_state = self._state
 
-            if self.impulse:
-                self.impulse = False
-                behavior = 'IMPULSE'
+            if self._impulse:
+                self._impulse = False
+                _behavior = 'IMPULSE'
             else:
-                behavior = self.actions["READ"]()
+                _behavior = self._actions["READ"]()
 
-            n = self.states_behaviors[current_state][behavior].head
-            next_node = None
-            while n is not None:
-                if type(n) is ActionNode:
-                    next_node = n.execute(self)
-                elif type(n) is IfNode:
-                    next_node = n.execute(self)
+            _n = self._states_behaviors[_current_state][_behavior].head
+            _next_node = None
+            while _n is not None:
+                if type(_n) is ActionNode:
+                    _next_node = _n.execute(self)
+                elif type(_n) is IfNode:
+                    _next_node = _n.execute(self)
 
-                n = next_node
+                _n = _next_node

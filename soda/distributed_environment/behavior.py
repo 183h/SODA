@@ -44,7 +44,7 @@ class ActionNode(Node):
 
     def execute(self, entity):
         action, arguments = self.action, self.arguments
-        entity.actions[action](arguments)
+        entity._actions[action](arguments)
 
         return self.next
 

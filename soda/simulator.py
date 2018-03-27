@@ -5,7 +5,6 @@ logger = getLogger(__name__)
 
 
 class Simulator(object):
-    """docstring for Simulator"""
     def __init__(self, behavior, topology):
         self.behavior = behavior
         self.topology = topology
@@ -27,7 +26,7 @@ class Simulator(object):
 
             if ('IMPULSE' in self.behavior.states_behaviors[self.topology.entities[e]["state"]]
                     and impulse_counter < 1):
-                entity.impulse = True
+                entity._impulse = True
                 impulse_counter += 1
 
             # initiate attributes serving as registers
@@ -43,4 +42,4 @@ class Simulator(object):
         for e in self.entities:
             e.join()
 
-        logger.info("Entities state's [{0}]".format([(e.id_e, e.state) for e in self.entities]))
+        logger.info("Entities state's [{0}]".format([(e._id, e._state) for e in self.entities]))
