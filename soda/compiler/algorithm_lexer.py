@@ -17,7 +17,7 @@ class AlgorithmLexer(object):
         'IDENTIFIER', 'NUMBER', 'STRING'
     )
 
-    literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/']
+    literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/', '<', '>']
 
     # Ignored characters
     t_ignore = ' \t\n'
