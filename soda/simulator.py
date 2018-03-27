@@ -1,4 +1,7 @@
 from soda.distributed_environment.entity import Entity
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class Simulator(object):
@@ -35,5 +38,9 @@ class Simulator(object):
 
     def simulate(self):
         for e in self.entities:
-
             e.start()
+
+        for e in self.entities:
+            e.join()
+
+        logger.info("Entities state's [{0}]".format([(e.id_e, e.state) for e in self.entities]))

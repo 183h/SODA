@@ -65,7 +65,6 @@ class AlgorithmParser(object):
 
     def p_behavior(self, p):
         ''' behavior : initiation_event begin statements end '''
-        # print(p[1])
         self.state_behaviors[p[1]] = self.behavior
         self.behavior = Behavior()
         self.jump_ids = 0
@@ -90,12 +89,22 @@ class AlgorithmParser(object):
                          | if condition if_seen then statements else else_seen statements endif endif_seen '''
 
     def p_condition(self, p):
-        ''' condition : STRING '''
-        p[0] = p[1]
+        ''' condition : condition '=' '=' condition
+                      | condition '>' condition
+                      | condition '<' condition
+                      | '(' condition ')'
+                      | NUMBER
+                      | IDENTIFIER '''
+        p[0] = p[:]
+        self.condition.append(list(filter(lambda x: x is not None, p[1:])))
 
     def p_if_seen(self, p):
         ''' if_seen : '''
-        self.behavior.insert(IfNode(p[-1]))
+        c = flatten(self.condition[-1])
+        c = list(filter(lambda x: x is not None, c))
+        self.condition = ''.join(c)
+        self.behavior.insert(IfNode(self.condition))
+        self.condition = []
 
     def p_endif_seen(self, p):
         ''' endif_seen : '''
@@ -204,6 +213,7 @@ class AlgorithmParser(object):
         self.state = None
         self.read_arguments = ()
         self.send_arguments = ()
+        self.condition = []
 
     @open_file
     def parsing(self, file):

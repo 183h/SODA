@@ -62,7 +62,7 @@ class IfNode(Node):
                 ', Else(' + (str(self.jump_else.id) if self.jump_else is not None else '') + ")]")
 
     def execute(self, entity):
-        condition_result = eval(self.condition.replace("\"", ""), {}, entity.__dict__)
+        condition_result = eval(self.condition, {}, entity.__dict__)
 
         if condition_result:
             n = self.next

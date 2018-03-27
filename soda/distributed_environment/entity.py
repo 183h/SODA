@@ -1,4 +1,4 @@
-from zmq import Context, REP, REQ, DONTWAIT, Poller, POLLIN
+from zmq import Context, DONTWAIT, Poller, POLLIN, DEALER
 from threading import Thread
 from pickle import dumps, loads
 from logging import getLogger
@@ -21,11 +21,13 @@ class Entity(Thread):
         self.impulse = False
 
         context = Context()
-        self.in_socket = context.socket(REP)
+        self.in_socket = context.socket(DEALER)
         self.in_socket.bind("tcp://*:%s" % self.in_port)
 
         poller = Poller()
         poller.register(self.in_socket, POLLIN)
+
+        self.id = int(id_e)
 
 
         def read():
@@ -35,6 +37,10 @@ class Entity(Thread):
                 if socks.get(self.in_socket) == POLLIN:
                     pickled_received_message = self.in_socket.recv(flags=DONTWAIT)
                     received_message, sender_entity_id_e = loads(pickled_received_message)
+
+                    logger.info("Entity: {0} | Action: RECEIVED | Message : {1} | From entity : {2} ".format(self.id_e,
+                                                                                                         received_message,
+                                                                                                         sender_entity_id_e))
 
                     for pattern in list(filter(lambda p: p != 'IMPULSE', self.states_behaviors[self.state])):
 
@@ -70,7 +76,7 @@ class Entity(Thread):
 
             for n in self.neighbours:
                 for e in n:
-                    out_socket = context.socket(REQ)
+                    out_socket = context.socket(DEALER)
                     out_socket.connect("tcp://localhost:%s" % n[e]["in_port"])
                     message_content = (message, self.id_e)
                     pickled_message = dumps(message_content)
