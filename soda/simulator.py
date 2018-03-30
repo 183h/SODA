@@ -5,8 +5,8 @@ logger = getLogger(__name__)
 
 
 class Simulator(object):
-    def __init__(self, behavior, topology):
-        self.behavior = behavior
+    def __init__(self, algorithm, topology):
+        self.algorithm = algorithm
         self.topology = topology
         self.entities = []
 
@@ -19,12 +19,12 @@ class Simulator(object):
                 self.topology.entities[e]["ip"],
                 self.topology.entities[e]["in_port"],
                 self.topology.entities[e]["state"],
-                self.behavior.term_states,
-                self.behavior.states_behaviors,
+                self.algorithm.term_states,
+                self.algorithm.states_behaviors,
                 self.topology.neighbours[e]
             )
 
-            if ('IMPULSE' in self.behavior.states_behaviors[self.topology.entities[e]["state"]]
+            if ('IMPULSE' in self.algorithm.states_behaviors[self.topology.entities[e]["state"]]
                     and impulse_counter < 1):
                 entity._impulse = True
                 impulse_counter += 1
