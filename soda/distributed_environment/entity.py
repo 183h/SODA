@@ -98,11 +98,16 @@ class Entity(Thread):
             exec(_expression, {}, _self.__dict__)
             _logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(_self._id, _expression))
 
+        @support_arguments
+        def log(_expression):
+            print("SODA: " + eval(_expression, {}, _self.__dict__))
+
         _self._actions = {
             "READ": read,
             "SEND": send,
             "BECOME": become,
-            "ASSIGN": assign
+            "ASSIGN": assign,
+            "LOG": log
         }
 
     def run(_self):

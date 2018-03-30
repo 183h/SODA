@@ -8,8 +8,9 @@ logger = getLogger(__name__)
 class AlgorithmLexer(object):
     keywords = (
         'TERM',
-        'IMPULSE', 'begin', 'end',
-        'SEND', 'BECOME', 'READ',
+        'IMPULSE', 'READ',
+        'begin', 'end',
+        'SEND', 'BECOME', 'LOG',
         'if', 'then', 'endif', 'else'
     )
 
