@@ -102,13 +102,16 @@ class AlgorithmParser(object):
 
     def p_action(self, p):
         ''' action : SEND '(' send_arguments ')'
-                   | BECOME '(' become_arguments ')' '''
-        # p[0] = (p[1], p[3])
+                   | BECOME '(' become_arguments ')'
+                   | LOG '(' log_arguments ')' '''
         if p[1] == 'BECOME':
             self.behavior.insert(ActionNode(p[1], p[3]))
-        if p[1] == 'SEND':
+        elif p[1] == 'SEND':
             self.behavior.insert(ActionNode(p[1], ('(' + ', '.join(self.send_arguments) + ')', )))
             self.send_arguments = ()
+        elif p[1] == 'LOG':
+            self.behavior.insert(ActionNode(p[1], ('+'.join(['str(' + str(a) + ')' for a in self.log_arguments]), )))
+            self.log_arguments = ()
 
     def p_read_arguments(self, p):
         ''' read_arguments : read_arg
@@ -140,6 +143,15 @@ class AlgorithmParser(object):
         ''' become_arguments : IDENTIFIER '''
         p[0] = (p[1],)
         self.used_states.append(p[1])
+
+    def p_log_arguments(self, p):
+        ''' log_arguments : log_arg
+                          | log_arg ',' log_arguments '''
+
+    def p_log_arg(self, p):
+        ''' log_arg : STRING
+                    | IDENTIFIER '''
+        self.log_arguments += (p[1], )
 
     def p_NONE(self, p):
         ''' NONE : '''
@@ -204,6 +216,7 @@ class AlgorithmParser(object):
         self.send_arguments = ()
         self.condition = []
         self.used_states = []
+        self.log_arguments = ()
 
         self.special_identifiers = ['ID', 'NEIGHBOURS', 'SENDER']
 
