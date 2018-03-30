@@ -27,8 +27,8 @@ class Entity(Thread):
         _poller = Poller()
         _poller.register(_self._in_socket, POLLIN)
 
-        _self.id = int(_id)
-        _self.neighbours = [_n for _n in _neighbours]
+        _self.ID = int(_id)
+        _self.NEIGHBOURS = [_n for _n in _neighbours]
 
 
         def read():

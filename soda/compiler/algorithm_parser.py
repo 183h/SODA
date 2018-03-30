@@ -144,6 +144,10 @@ class AlgorithmParser(object):
 
     def p_assignemnt(self, p):
         ''' assignment : IDENTIFIER '=' expression '''
+        if p[1] in self.special_identifiers:
+            logger.info("Special identifier used on left side of assignment! -> {}".format(p[1]))
+            exit()
+
         self.behavior.insert(ActionNode('ASSIGN', (p[1] + ' = ' + self.expression,)))
         self.expression = None
         self.arithmetic_expr = []
@@ -196,6 +200,8 @@ class AlgorithmParser(object):
         self.read_arguments = ()
         self.send_arguments = ()
         self.condition = []
+
+        self.special_identifiers = ['ID', 'NEIGHBOURS']
 
     @open_file
     def parsing(self, file):
