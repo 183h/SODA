@@ -63,6 +63,9 @@ class Entity(Thread):
 
                                         _self._actions["ASSIGN"]((_expression, ))
 
+                                # store sender id to usable identifier
+                                _self.SENDER = _sender_entity_id
+
                                 _logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(_self._id, _received_message, _sender_entity_id))
 
                                 return _pattern

@@ -205,7 +205,7 @@ class AlgorithmParser(object):
         self.condition = []
         self.used_states = []
 
-        self.special_identifiers = ['ID', 'NEIGHBOURS']
+        self.special_identifiers = ['ID', 'NEIGHBOURS', 'SENDER']
 
     @open_file
     def parsing(self, file):
