@@ -10,7 +10,7 @@ class TopologyLexer(object):
         'IP', 'NAME', 'DIGIT'
     )
 
-    literals = [';']
+    literals = [';', ',']
 
     # Tokens
     t_IP = r'(?:[0-9]{1,3}\.){3}[0-9]{1,3}'

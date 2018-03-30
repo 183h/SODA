@@ -162,7 +162,7 @@ class AlgorithmParser(object):
 
     def p_assignemnt(self, p):
         ''' assignment : IDENTIFIER '=' expression '''
-        self.behavior.insert(ActionNode('ASSIGN', (p[1] + '=' + self.expression,)))
+        self.behavior.insert(ActionNode('ASSIGN', (p[1] + ' = ' + self.expression,)))
         self.expression = None
         self.arithmetic_expr = []
 
