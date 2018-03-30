@@ -24,6 +24,7 @@ class AlgorithmParser(object):
     def p_term_term(self, p):
         ''' term_term : IDENTIFIER '''
         self.algorithm.term_states.append(p[1])
+        self.algorithm.all_states.append(p[1])
 
     def p_second_section(self, p):
         ''' second_section : states '''
@@ -35,6 +36,7 @@ class AlgorithmParser(object):
     def p_seen_state(self, p):
         ''' seen_state : '''
         self.state = p[-1]
+        self.algorithm.all_states.append(self.state)
 
     def p_states_behaviors(self, p):
         ''' states_behaviors : behavior add_behaviors
@@ -137,6 +139,7 @@ class AlgorithmParser(object):
     def p_become_arguments(self, p):
         ''' become_arguments : IDENTIFIER '''
         p[0] = (p[1],)
+        self.used_states.append(p[1])
 
     def p_NONE(self, p):
         ''' NONE : '''
@@ -200,6 +203,7 @@ class AlgorithmParser(object):
         self.read_arguments = ()
         self.send_arguments = ()
         self.condition = []
+        self.used_states = []
 
         self.special_identifiers = ['ID', 'NEIGHBOURS']
 
@@ -216,7 +220,14 @@ class AlgorithmParser(object):
                 except StopIteration:
                     return None
 
-        self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
+        self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token, tracking=True)
+
+        # check if states used in BECOME action are defined
+        for s in self.used_states:
+            if s not in self.algorithm.all_states:
+                logger.info("Trying to change state of entity to undefined state! -> {}".format(s))
+                exit()
+
         self.process_conditions_scopes()
 
         logger.info("TERM STATES {0}".format(self.algorithm.term_states))
