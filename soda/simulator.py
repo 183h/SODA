@@ -29,10 +29,6 @@ class Simulator(object):
                 entity._impulse = True
                 impulse_counter += 1
 
-            # initiate attributes serving as registers
-            for r in self.behavior.registers:
-                setattr(entity, str(r), None)
-
             self.entities.append(entity)
 
     def simulate(self):

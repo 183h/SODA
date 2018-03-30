@@ -15,25 +15,7 @@ class AlgorithmParser(object):
                           | first_section_line first_section '''
 
     def p_first_section_line(self, p):
-        ''' first_section_line : STATES '=' states_list ';'
-                               | REGISTERS '=' register_list ';'
-                               | TERM '=' term_list ';' '''
-
-    def p_states_list(self, p):
-        ''' states_list  : state_term
-                         | states_list ',' state_term '''
-
-    def p_state_term(self, p):
-        ''' state_term : IDENTIFIER '''
-        self.algorithm.states.append(p[1])
-
-    def p_register_list(self, p):
-        ''' register_list : register_term
-                          | register_list ',' register_term '''
-
-    def p_register_term(self, p):
-        ''' register_term : IDENTIFIER '''
-        self.algorithm.registers.append(p[1])
+        ''' first_section_line : TERM '=' term_list ';' '''
 
     def p_term_list(self, p):
         ''' term_list : term_term
@@ -231,7 +213,6 @@ class AlgorithmParser(object):
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token)
         self.process_conditions_scopes()
 
-        logger.info("REGISTERS {0}".format(self.algorithm.registers))
         logger.info("TERM STATES {0}".format(self.algorithm.term_states))
 
         for s, bs in self.algorithm.states_behaviors.items():
