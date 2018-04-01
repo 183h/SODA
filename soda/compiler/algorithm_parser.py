@@ -107,7 +107,7 @@ class AlgorithmParser(object):
         if p[1] == 'BECOME':
             self.behavior.insert(ActionNode(p[1], p[3]))
         elif p[1] == 'SEND':
-            self.behavior.insert(ActionNode(p[1], ('(' + ', '.join(self.send_arguments) + ')', )))
+            self.behavior.insert(ActionNode(p[1], ('(' + ', '.join(self.send_arguments) + ')', p[3], )))
             self.send_arguments = ()
         elif p[1] == 'LOG':
             self.behavior.insert(ActionNode(p[1], ('+'.join(['str(' + str(a) + ')' for a in self.log_arguments]), )))
@@ -131,12 +131,16 @@ class AlgorithmParser(object):
         p[0] = 'IDENTIFIER'
 
     def p_send_arguments(self, p):
-        ''' send_arguments : send_arg
-                           | send_arg ',' send_arguments '''
+        ''' send_arguments : '(' message ')' ',' IDENTIFIER '''
+        p[0] = p[5]
 
-    def p_send_args(self, p):
-        ''' send_arg : STRING
-                     | IDENTIFIER '''
+    def p_message(self, p):
+        ''' message : message_part
+                    | message_part ',' message '''
+
+    def p_message_part(self, p):
+        ''' message_part : STRING
+                         | IDENTIFIER '''
         self.send_arguments += (p[1], )
 
     def p_become_arguments(self, p):
