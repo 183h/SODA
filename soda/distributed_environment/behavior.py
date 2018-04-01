@@ -40,7 +40,7 @@ class ActionNode(Node):
         self.arguments = arguments
 
     def __str__(self):
-        return self.action + '[Args(' + (', '.join(filter(None, flatten(self.arguments))) if self.arguments is not None else '') + ')]'
+        return self.action + '[Args(' + (', '.join(map(str, filter(None, flatten(self.arguments)))) if self.arguments is not None else '') + ')]'
 
     def execute(self, entity):
         action, arguments = self.action, self.arguments
@@ -62,7 +62,7 @@ class IfNode(Node):
                 ', Else(' + (str(self.jump_else.id) if self.jump_else is not None else '') + ")]")
 
     def execute(self, entity):
-        condition_result = eval(self.condition, {}, entity.__dict__)
+        condition_result = entity._actions["EVALUATE"](self.condition)
 
         if condition_result:
             n = self.next

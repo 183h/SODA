@@ -71,19 +71,26 @@ class Entity(Thread):
                                 return _pattern
 
         @support_arguments
-        def send(_message):
-            _message = eval(str(_message), {}, _self.__dict__)
+        def send(_message, _recipients):
+            _message = _self._actions["EVALUATE"](str(_message))
+            _recipients = _self._actions["EVALUATE"](str(_recipients))
 
-            if type(_message) is str:
-                _message = (_message[:], )
+            if type(_message) is not tuple:
+                _message = (_message, )
 
-            for _n in _self._neighbours:
-                _out_socket = _context.socket(DEALER)
-                _out_socket.connect("tcp://localhost:%s" % _self._neighbours[_n]["in_port"])
-                _message_content = (_message, _self._id)
-                _pickled_message = dumps(_message_content)
-                _out_socket.send(_pickled_message, flags=DONTWAIT)
-                _logger.info("Entity: {0} | Action: SEND | Message : {1} | To entity : {2} ".format(_self._id, _message, _n))
+            if type(_recipients) is int:
+                _recipients = [_recipients] * 1
+
+            for _n in _recipients:
+                try:
+                    _out_socket = _context.socket(DEALER)
+                    _out_socket.connect("tcp://localhost:%s" % _self._neighbours[_n]["in_port"])
+                    _message_content = (_message, _self._id)
+                    _pickled_message = dumps(_message_content)
+                    _out_socket.send(_pickled_message, flags=DONTWAIT)
+                    _logger.info("Entity: {0} | Action: SEND | Message : {1} | To entity : {2} ".format(_self._id, _message, _n))
+                except KeyError:
+                    _logger.info("Entity: {0} | Action: SEND | Trying to send message to non existing neighbour! -> {1} ".format(_self._id, _n))
 
         @support_arguments
         def become(_new_state):
@@ -95,19 +102,35 @@ class Entity(Thread):
 
         @support_arguments
         def assign(_expression):
-            exec(_expression, {}, _self.__dict__)
-            _logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(_self._id, _expression))
+            try:
+                exec(_expression, {}, _self.__dict__)
+                _logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(_self._id, _expression))
+            except NameError as Name:
+                _logger.info("Entity: {0} | Action: ASSIGN | Undefined identifier! -> {1} ".format(_self._id, Name))
+                exit()
 
         @support_arguments
         def log(_expression):
-            print("SODA: " + eval(_expression, {}, _self.__dict__))
+            print("SODA: " + _self._actions["EVALUATE"](_expression))
+
+        def evaluate(_expression):
+            result = None
+
+            try:
+                result = eval(_expression, {}, _self.__dict__)
+            except NameError as Name:
+                _logger.info("Entity: {0} | Action: EVALUATE | Undefined identifier! -> {1} ".format(_self._id, Name))
+                exit()
+
+            return result
 
         _self._actions = {
             "READ": read,
             "SEND": send,
             "BECOME": become,
             "ASSIGN": assign,
-            "LOG": log
+            "LOG": log,
+            "EVALUATE": evaluate
         }
 
     def run(_self):
