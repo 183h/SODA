@@ -150,10 +150,15 @@ class AlgorithmParser(object):
                     | message_part ',' message '''
 
     def p_message_part(self, p):
-        ''' message_part : STRING
-                         | IDENTIFIER
-                         | NUMBER '''
-        self.send_arguments += (p[1], )
+        ''' message_part : STRING string_seen_read
+                         | IDENTIFIER identifier_seen_read
+                         | NUMBER number_seen_read '''
+        if p[2] == 'IDENTIFIER':
+            self.send_arguments += (p[1],)
+        elif p[2] == 'STRING':
+            self.send_arguments += ("'" + p[1] + "'",)
+        elif p[2] == 'NUMBER':
+            self.send_arguments += (p[1],)
 
     def p_become_arguments(self, p):
         ''' become_arguments : IDENTIFIER '''
