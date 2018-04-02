@@ -119,15 +119,26 @@ class AlgorithmParser(object):
                            | NONE '''
 
     def p_read_arg(self, p):
-        ''' read_arg : IDENTIFIER identifier_seen
-                     | STRING '''
-        try:
-            self.read_arguments += ((p[1], p[2]), )
-        except:
-            self.read_arguments += (p[1].replace('"', '') , )
+        ''' read_arg : IDENTIFIER identifier_seen_read
+                     | STRING string_seen_read
+                     | NUMBER number_seen_read '''
+        if p[2] == 'IDENTIFIER':
+            self.read_arguments += ((p[1], p[2]),)
+        elif p[2] == 'STRING':
+            self.read_arguments += (p[1],)
+        elif p[2] == 'NUMBER':
+            self.read_arguments += (int(p[1]),)
 
-    def p_identifier_seen(self, p):
-        ''' identifier_seen : '''
+    def p_number_seen_read(self, p):
+        ''' number_seen_read : '''
+        p[0] = 'NUMBER'
+
+    def p_string_seen_read(self, p):
+        ''' string_seen_read : '''
+        p[0] = 'STRING'
+
+    def p_identifier_seen_read(self, p):
+        ''' identifier_seen_read : '''
         p[0] = 'IDENTIFIER'
 
     def p_send_arguments(self, p):
@@ -140,7 +151,8 @@ class AlgorithmParser(object):
 
     def p_message_part(self, p):
         ''' message_part : STRING
-                         | IDENTIFIER '''
+                         | IDENTIFIER
+                         | NUMBER '''
         self.send_arguments += (p[1], )
 
     def p_become_arguments(self, p):
@@ -173,7 +185,7 @@ class AlgorithmParser(object):
 
     def p_expression(self, p):
         ''' expression : arithmetic_expr arithmetic_seen
-                       | string_expr string_seen '''
+                       | string_expr string_seen_expression '''
 
     def p_arithmetic_seen(self, p):
         '''arithmetic_seen : '''
@@ -181,8 +193,8 @@ class AlgorithmParser(object):
         ae = list(filter(lambda x: x is not None, ae))
         self.expression = ''.join(ae)
 
-    def p_string_seen(self, p):
-        '''string_seen : '''
+    def p_string_seen_expression(self, p):
+        '''string_seen_expression : '''
         self.expression = p[-1]
 
     def p_arithmetic_expr(self, p):
@@ -198,7 +210,7 @@ class AlgorithmParser(object):
 
     def p_string_expr(self, p):
         ''' string_expr : STRING '''
-        p[0] = p[1]
+        p[0] = "'" + p[1] + "'"
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
