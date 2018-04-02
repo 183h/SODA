@@ -1,5 +1,6 @@
 from soda.distributed_environment.entity import Entity
 from logging import getLogger
+from soda.deadlock_inspector import DeadlockInspector
 
 logger = getLogger(__name__)
 
@@ -34,6 +35,9 @@ class Simulator(object):
     def simulate(self):
         for e in self.entities:
             e.start()
+
+        deadlock_inspector = DeadlockInspector(self.entities, self.algorithm.term_states)
+        deadlock_inspector.start()
 
         for e in self.entities:
             e.join()

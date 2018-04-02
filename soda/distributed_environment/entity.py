@@ -19,6 +19,7 @@ class Entity(Thread):
         _self._states_behaviors = _states_behaviors
         _self._neighbours = _neighbours
         _self._impulse = False
+        _self._read_lock = False
 
         _context = Context()
         _self._in_socket = _context.socket(DEALER)
@@ -141,7 +142,9 @@ class Entity(Thread):
                 _self._impulse = False
                 _behavior = 'IMPULSE'
             else:
+                _self._read_lock = True
                 _behavior = _self._actions["READ"]()
+                _self._read_lock = False
 
             _n = _self._states_behaviors[_current_state][_behavior].head
             _next_node = None
