@@ -32,12 +32,13 @@ class Simulator(object):
 
             self.entities.append(entity)
 
-    def simulate(self):
+    def simulate(self, no_di):
         for e in self.entities:
             e.start()
 
-        deadlock_inspector = DeadlockInspector(self.entities, self.algorithm.term_states)
-        deadlock_inspector.start()
+        if not no_di:
+            deadlock_inspector = DeadlockInspector(self.entities, self.algorithm.term_states)
+            deadlock_inspector.start()
 
         for e in self.entities:
             e.join()

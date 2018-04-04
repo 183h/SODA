@@ -84,8 +84,9 @@ def parsetop(ctx, filepath):
 @main.command(short_help='Run simulation.')
 @click.argument('ALGORITHM_FILE', type=click.Path(exists=True))
 @click.argument('TOPOLOGY_FILE', type=click.Path(exists=True))
+@click.option('--no-di', is_flag=True, help='Disable Deadlock Inspector.')
 @click.pass_context
-def sim(ctx, algorithm_file, topology_file):
+def sim(ctx, algorithm_file, topology_file, no_di):
     '''
     Compile algorithm, topology and start simulation.
 
@@ -105,4 +106,4 @@ def sim(ctx, algorithm_file, topology_file):
 
     simulator = Simulator(algorithm, topology)
     simulator.create_entities()
-    simulator.simulate()
+    simulator.simulate(no_di)
