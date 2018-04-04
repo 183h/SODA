@@ -43,4 +43,7 @@ class Simulator(object):
         for e in self.entities:
             e.join()
 
-        logger.info("Entities state's [{0}]".format([(e._id, e._state) for e in self.entities]))
+        logger.info("Sent messages per entity (entity id, count of sent messages) -> {0}".format([(e._id, e._count_sent_messages) for e in self.entities]))
+        logger.info("Entities state's (entity id, state) -> {0}".format([(e._id, e._state) for e in self.entities]))
+
+        logger.info("Total count of sent messages -> {0}".format(sum([e._count_sent_messages for e in self.entities])))

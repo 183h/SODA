@@ -28,6 +28,13 @@ class DeadlockInspector(Thread):
 
             if (("R" in result and True in result and False not in result)
                     or ("R" in result and True not in result and False not in result)):
+                logger.info("Sent messages per entity (entity id, count of sent messages) -> {0}".format(
+                    [(e._id, e._count_sent_messages) for e in self.entities]))
+                logger.info(
+                    "Entities state's (entity id, state) -> {0}".format([(e._id, e._state) for e in self.entities]))
+                logger.info(
+                    "Total count of sent messages -> {0}".format(sum([e._count_sent_messages for e in self.entities])))
+
                 logger.info("DEADLOCK!")
                 _exit(EX_OK)
             elif True in result and "R" not in result and False not in result:
