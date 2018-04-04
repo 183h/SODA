@@ -20,6 +20,7 @@ class Entity(Thread):
         _self._neighbours = _neighbours
         _self._impulse = False
         _self._read_lock = False
+        _self._count_sent_messages = 0
 
         _context = Context()
         _self._in_socket = _context.socket(DEALER)
@@ -89,7 +90,9 @@ class Entity(Thread):
                     _message_content = (_message, _self._id)
                     _pickled_message = dumps(_message_content)
                     _out_socket.send(_pickled_message, flags=DONTWAIT)
+
                     _logger.info("Entity: {0} | Action: SEND | Message : {1} | To entity : {2} ".format(_self._id, _message, _n))
+                    _self._count_sent_messages += 1
                 except KeyError:
                     _logger.info("Entity: {0} | Action: SEND | Trying to send message to non existing neighbour! -> {1} ".format(_self._id, _n))
 
