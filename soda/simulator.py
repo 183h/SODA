@@ -15,6 +15,9 @@ class Simulator(object):
         impulse_counter = 0
 
         for e in self.topology.entities:
+            if "state" not in self.topology.entities[e]:
+                continue
+
             entity = Entity(
                 e,
                 self.topology.entities[e]["ip"],
