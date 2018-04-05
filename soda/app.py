@@ -11,8 +11,9 @@ from logging import basicConfig, INFO
 
 @click.group()
 @click.pass_context
-def main(ctx):
-    basicConfig(filename='simulation.log', filemode='w', level=INFO)
+@click.option('--log-name', type=click.Path(), default='simulation', help='Name of file for log output. Deafult is simulation.log.')
+def main(ctx, log_name):
+    basicConfig(filename=log_name + '.log', filemode='w', level=INFO)
 
     ctx.obj = {}
     ctx.obj['algorithm_lexer'] = AlgorithmLexer()
@@ -22,63 +23,63 @@ def main(ctx):
 
 
 @main.command(short_help='Run algorithm lexical analysis.')
-@click.argument('FILEPATH', type=click.Path(exists=True))
+@click.argument('ALGORITHM_FILE', type=click.Path(exists=True))
 @click.pass_context
-def lexalg(ctx, filepath):
+def lexalg(ctx, algorithm_file):
     '''
     Run algorithm lexical analysis.
 
-        FILEPATH - path to file with algorithm description.
+        ALGORITHM_FILE - path to file with algorithm description.
     '''
 
-    ctx.obj['algorithm_lexer'].lexical_analysis(filepath=filepath)
+    ctx.obj['algorithm_lexer'].lexical_analysis(filepath=algorithm_file)
 
 
 @main.command(short_help='Run algorithm parsing.')
-@click.argument('FILEPATH', type=click.Path(exists=True))
+@click.argument('ALGORITHM_FILE', type=click.Path(exists=True))
 @click.pass_context
-def parsealg(ctx, filepath):
+def parsealg(ctx, algorithm_file):
     '''
     Run algorithm parsing.
 
-        FILEPATH - path to file with algorithm description.
+        ALGORITHM_FILE - path to file with algorithm description.
     '''
 
     algorithm = Algorithm()
     parser = AlgorithmParser()
 
     parser.build(ctx.obj['algorithm_lexer'], algorithm)
-    parser.parsing(filepath=filepath)
+    parser.parsing(filepath=algorithm_file)
 
 
 @main.command(short_help='Run topology lexical analysis.')
-@click.argument('FILEPATH', type=click.Path(exists=True))
+@click.argument('TOPOLOGY_FILE', type=click.Path(exists=True))
 @click.pass_context
-def lextop(ctx, filepath):
+def lextop(ctx, topology_file):
     '''
     Run topology lexical analysis.
 
-        FILEPATH - path to file with topology description.
+        TOPOLOGY_FILE - path to file with topology description.
     '''
 
-    ctx.obj['topology_lexer'].lexical_analysis(filepath=filepath)
+    ctx.obj['topology_lexer'].lexical_analysis(filepath=topology_file)
 
 
 @main.command(short_help='Run topology parsing.')
-@click.argument('FILEPATH', type=click.Path(exists=True))
+@click.argument('TOPOLOGY_FILE', type=click.Path(exists=True))
 @click.pass_context
-def parsetop(ctx, filepath):
+def parsetop(ctx, topology_file):
     '''
     Run topology parsing.
 
-        FILEPATH - path to file with topology description.
+        TOPOLOGY_FILE - path to file with topology description.
     '''
 
     topology = Topology()
     parser = TopologyParser()
 
     parser.build(ctx.obj['topology_lexer'], topology)
-    parser.parsing(filepath=filepath)
+    parser.parsing(filepath=topology_file)
 
 
 @main.command(short_help='Run simulation.')
@@ -90,7 +91,8 @@ def sim(ctx, algorithm_file, topology_file, no_di):
     '''
     Compile algorithm, topology and start simulation.
 
-        FILEPATH - path to file with topology description.
+        ALGORITHM_FILE - path to file with algorithm description.
+        TOPOLOGY_FILE - path to file with topology description.
     '''
 
     algorithm = Algorithm()

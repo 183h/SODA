@@ -14,11 +14,15 @@ class TopologyParser(object):
                      | entity_line entities'''
 
     def p_first_section_line(self, p):
-        ''' entity_line : DIGIT ';' IP ';' DIGIT ';' neighbours ';' NAME'''
+        ''' entity_line : DIGIT ';' IP ';' DIGIT ';' neighbours ';' STATE
+                        | DIGIT ';' IP ';' DIGIT ';' EXTERNAL '''
         p[1] = int(p[1])
-        self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5], "state": p[9]}
-        self.topology.neighbours[p[1]] = {int(n) : {"ip": None, "in_port": None} for n in self.entity_neighbours}
-        self.entity_neighbours = []
+        if p[7] == 'EXTERNAL':
+            self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5]}
+        else:
+            self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5], "state": p[9]}
+            self.topology.neighbours[p[1]] = {int(n) : {"ip": None, "in_port": None} for n in self.entity_neighbours}
+            self.entity_neighbours = []
 
     def p_neighbours(self, p):
         ''' neighbours : DIGIT
@@ -27,6 +31,7 @@ class TopologyParser(object):
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
+        exit()
 
     def build(self, lexer, topology):
         self.lexer = lexer
