@@ -103,7 +103,8 @@ class AlgorithmParser(object):
     def p_action(self, p):
         ''' action : SEND '(' send_arguments ')'
                    | BECOME '(' become_arguments ')'
-                   | LOG '(' log_arguments ')' '''
+                   | LOG '(' log_arguments ')'
+                   | EXEC '(' exec_arguments ')' '''
         if p[1] == 'BECOME':
             self.behavior.insert(ActionNode(p[1], p[3]))
         elif p[1] == 'SEND':
@@ -112,6 +113,29 @@ class AlgorithmParser(object):
         elif p[1] == 'LOG':
             self.behavior.insert(ActionNode(p[1], ('+'.join(['str(' + str(a) + ')' for a in self.log_arguments]), )))
             self.log_arguments = ()
+        elif p[1] == 'EXEC':
+            self.behavior.insert(ActionNode(p[1], p[3]))
+
+    def p_exec_arguments(self, p):
+        ''' exec_arguments : STRING ',' output_type ',' exec_output exec_input '''
+        p[0] = (p[1], p[3], p[5] if p[5] is not None else None, p[6] if p[6] is not None else None)
+
+    def p_output_type(self, p):
+        ''' output_type : int
+                        | string '''
+        p[0] = p[1]
+
+    def p_exec_input(self, p):
+        ''' exec_input : ',' IDENTIFIER
+                       | NONE '''
+        try:
+            p[0] = p[2]
+        except:
+            p[0] = p[1]
+
+    def p_exec_output(self, p):
+        ''' exec_output : IDENTIFIER '''
+        p[0] = p[1]
 
     def p_read_arguments(self, p):
         ''' read_arguments : read_arg

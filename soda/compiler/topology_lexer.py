@@ -27,6 +27,9 @@ class TopologyLexer(object):
         r'[a-zA-Z][a-zA-Z]*'
         if t.value in self.keywords:  # is this a keyword?
             t.type = t.value
+            return t
+
+        t.value = 'i_' + t.value
         return t
 
     def t_error(self, t):

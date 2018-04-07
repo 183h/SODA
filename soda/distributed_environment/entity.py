@@ -4,6 +4,8 @@ from pickle import dumps, loads
 from logging import getLogger
 from soda.helpers import support_arguments
 from soda.distributed_environment.behavior import ActionNode, IfNode
+from subprocess import run, PIPE
+from shlex import split
 
 _logger = getLogger(__name__)
 
@@ -29,8 +31,8 @@ class Entity(Thread):
         _poller = Poller()
         _poller.register(_self._in_socket, POLLIN)
 
-        _self.ID = int(_id)
-        _self.NEIGHBOURS = [_n for _n in _neighbours]
+        _self.i_ID = int(_id)
+        _self.i_NEIGHBOURS = [_n for _n in _neighbours]
 
 
         def read():
@@ -66,7 +68,7 @@ class Entity(Thread):
                                         _self._actions["ASSIGN"]((_expression, ))
 
                                 # store sender id to usable identifier
-                                _self.SENDER = _sender_entity_id
+                                _self.i_SENDER = _sender_entity_id
 
                                 _logger.info("Entity: {0} | Action: READ | Message : {1} | From entity : {2} ".format(_self._id, _received_message, _sender_entity_id))
 
@@ -128,13 +130,31 @@ class Entity(Thread):
 
             return result
 
+        @support_arguments
+        def execute(_command, _output_type,  _output, _input):
+            _command = split(_command)
+            _input = _self._actions["EVALUATE"](str(_input))
+            _process_output= None
+
+            _completed_process = run(_command, input=str(_input), stdout=PIPE, universal_newlines=True, shell=True)
+
+            # set output type
+            if _output_type == 'string':
+                _process_output  = "'" + _completed_process.stdout + "'"
+            elif _output_type == 'int':
+                _process_output = int(_completed_process.stdout)
+
+            _expression = "%s = %s" % (_output, _process_output)
+            _self._actions["ASSIGN"]((_expression,))
+
         _self._actions = {
             "READ": read,
             "SEND": send,
             "BECOME": become,
             "ASSIGN": assign,
             "LOG": log,
-            "EVALUATE": evaluate
+            "EVALUATE": evaluate,
+            "EXEC": execute
         }
 
     def run(_self):
