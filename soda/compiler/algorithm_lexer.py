@@ -10,8 +10,9 @@ class AlgorithmLexer(object):
         'TERM',
         'IMPULSE', 'READ',
         'begin', 'end',
-        'SEND', 'BECOME', 'LOG',
-        'if', 'then', 'endif', 'else'
+        'SEND', 'BECOME', 'LOG', 'EXEC',
+        'if', 'then', 'endif', 'else',
+        'int', 'string'
     )
 
     tokens = keywords + (
@@ -27,6 +28,9 @@ class AlgorithmLexer(object):
         r'[a-zA-Z][a-zA-Z]*'
         if t.value in self.keywords:  # is this a keyword?
             t.type = t.value
+            return t
+
+        t.value = 'i_' + t.value
         return t
 
     def t_STRING(self, t):
