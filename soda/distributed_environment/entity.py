@@ -6,6 +6,7 @@ from soda.helpers import support_arguments
 from soda.distributed_environment.behavior import ActionNode, IfNode
 from subprocess import run, PIPE
 from shlex import split
+from copy import deepcopy
 
 _logger = getLogger(__name__)
 
@@ -33,6 +34,9 @@ class Entity(Thread):
 
         _self.i_ID = int(_id)
         _self.i_NEIGHBOURS = [_n for _n in _neighbours]
+
+        _self.__dict__['deepcopy'] = deepcopy
+        _self.__dict__['LEN'] = len
 
 
         def read():
@@ -111,8 +115,11 @@ class Entity(Thread):
             try:
                 exec(_expression, {}, _self.__dict__)
                 _logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(_self._id, _expression))
-            except NameError as Name:
-                _logger.info("Entity: {0} | Action: ASSIGN | Undefined identifier! -> {1} ".format(_self._id, Name))
+            except NameError as _Name:
+                _logger.info("Entity: {0} | Action: ASSIGN | Undefined identifier! -> {1} ".format(_self._id, _Name))
+                exit()
+            except AttributeError as _Attribute:
+                _logger.info("Entity: {0} | Action: ASSIGN | Wrong type of identifier! -> {1} ".format(_self._id, _expression))
                 exit()
 
         @support_arguments
@@ -124,8 +131,14 @@ class Entity(Thread):
 
             try:
                 result = eval(_expression, {}, _self.__dict__)
-            except NameError as Name:
-                _logger.info("Entity: {0} | Action: EVALUATE | Undefined identifier! -> {1} ".format(_self._id, Name))
+            except NameError as _Name:
+                _logger.info("Entity: {0} | Action: EVALUATE | Undefined identifier! -> {1} ".format(_self._id, _Name))
+                exit()
+            except AttributeError as _Attribute:
+                _logger.info("Entity: {0} | Action: EVALUATE | Wrong type of identifier! -> {1} ".format(_self._id, _expression))
+                exit()
+            except ValueError as _Value:
+                _logger.info("Entity: {0} | Action: EVALUATE | Wrong value! -> {1} ".format(_self._id, _expression))
                 exit()
 
             return result
@@ -147,6 +160,21 @@ class Entity(Thread):
             _expression = "%s = %s" % (_output, _process_output)
             _self._actions["ASSIGN"]((_expression,))
 
+        @support_arguments
+        def add(_array, _value):
+            _expression = "%s.append(%s)" % (_array, _value)
+            _self._actions["EVALUATE"](str(_expression))
+
+        @support_arguments
+        def remove(_array, _value):
+            _expression = "%s.remove(%s)" % (_array, _value)
+            _self._actions["EVALUATE"](str(_expression))
+
+        @support_arguments
+        def pop(_array, _output):
+            _expression = "%s = %s.pop()" % (_output, _array)
+            _self._actions["ASSIGN"]((_expression,))
+
         _self._actions = {
             "READ": read,
             "SEND": send,
@@ -154,7 +182,10 @@ class Entity(Thread):
             "ASSIGN": assign,
             "LOG": log,
             "EVALUATE": evaluate,
-            "EXEC": execute
+            "EXEC": execute,
+            "ADD": add,
+            "REMOVE": remove,
+            "POP": pop
         }
 
     def run(_self):

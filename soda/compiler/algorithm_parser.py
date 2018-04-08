@@ -76,9 +76,12 @@ class AlgorithmParser(object):
         ''' condition : condition '=' '=' condition
                       | condition '>' condition
                       | condition '<' condition
+                      | condition '<' '=' condition
+                      | condition '>' '=' condition
                       | '(' condition ')'
                       | NUMBER
-                      | IDENTIFIER '''
+                      | IDENTIFIER
+                      | LEN '(' IDENTIFIER ')' '''
         p[0] = p[:]
         self.condition.append(list(filter(lambda x: x is not None, p[1:])))
 
@@ -104,7 +107,10 @@ class AlgorithmParser(object):
         ''' action : SEND '(' send_arguments ')'
                    | BECOME '(' become_arguments ')'
                    | LOG '(' log_arguments ')'
-                   | EXEC '(' exec_arguments ')' '''
+                   | EXEC '(' exec_arguments ')'
+                   | ADD '(' add_arguments ')'
+                   | REMOVE '(' remove_arguments ')'
+                   | POP '(' pop_arguments ')' '''
         if p[1] == 'BECOME':
             self.behavior.insert(ActionNode(p[1], p[3]))
         elif p[1] == 'SEND':
@@ -115,6 +121,48 @@ class AlgorithmParser(object):
             self.log_arguments = ()
         elif p[1] == 'EXEC':
             self.behavior.insert(ActionNode(p[1], p[3]))
+        elif p[1] == 'ADD':
+            self.behavior.insert(ActionNode(p[1], p[3]))
+        elif p[1] == 'REMOVE':
+            self.behavior.insert(ActionNode(p[1], p[3]))
+        elif p[1] == 'POP':
+            self.behavior.insert(ActionNode(p[1], p[3]))
+
+    def p_pop_arguments(self, p):
+        '''pop_arguments : IDENTIFIER ',' IDENTIFIER '''
+        if p[3] in self.special_identifiers:
+            logger.info("Special identifier used as first argument! -> {}".format(p[1]))
+            exit()
+
+        p[0] = (p[1], p[3])
+
+    def p_remove_arguments(self, p):
+        ''' remove_arguments : IDENTIFIER ',' array_remove_value '''
+        if p[1] in self.special_identifiers:
+            logger.info("Special identifier used as first argument! -> {}".format(p[1]))
+            exit()
+
+        p[0] = (p[1], p[3])
+
+    def p_array_remove_value(self, p):
+        ''' array_remove_value : IDENTIFIER
+                               | NUMBER
+                               | string_expr '''
+        p[0] = p[1]
+
+    def p_add_arguments(self, p):
+        ''' add_arguments : IDENTIFIER ',' array_add_value '''
+        if p[1] in self.special_identifiers:
+            logger.info("Special identifier used as first argument! -> {}".format(p[1]))
+            exit()
+
+        p[0] = (p[1], p[3])
+
+    def p_array_add_value(self, p):
+        ''' array_add_value : NUMBER
+                            | string_expr
+                            | IDENTIFIER '''
+        p[0] = p[1]
 
     def p_exec_arguments(self, p):
         ''' exec_arguments : STRING ',' output_type ',' exec_output exec_input '''
@@ -214,7 +262,16 @@ class AlgorithmParser(object):
 
     def p_expression(self, p):
         ''' expression : arithmetic_expr arithmetic_seen
-                       | string_expr string_seen_expression '''
+                       | string_expr string_seen_expression
+                       | array_expr array_seen_expression '''
+
+    def p_array_seen_expression(self, p):
+        ''' array_seen_expression :  '''
+        self.expression = p[-1]
+
+    def p_array_expr(self, p):
+        ''' array_expr : '[' ']' '''
+        p[0] = '[]'
 
     def p_arithmetic_seen(self, p):
         '''arithmetic_seen : '''
@@ -233,9 +290,13 @@ class AlgorithmParser(object):
                             | arithmetic_expr '/' arithmetic_expr
                             | '(' arithmetic_expr ')'
                             | NUMBER
-                            | IDENTIFIER '''
+                            | identifier_deep_copy '''
         p[0] = p[:]
         self.arithmetic_expr.append(list(filter(lambda x: x is not None, p[1:])))
+
+    def p_identifier_deep_copy(self, p):
+        ''' identifier_deep_copy : IDENTIFIER '''
+        p[0] = 'deepcopy(' + p[1] + ')'
 
     def p_string_expr(self, p):
         ''' string_expr : STRING '''
@@ -263,7 +324,7 @@ class AlgorithmParser(object):
         self.used_states = []
         self.log_arguments = ()
 
-        self.special_identifiers = ['ID', 'NEIGHBOURS', 'SENDER']
+        self.special_identifiers = ['ID', 'NEIGHBOURS', 'SENDER', 'len', 'deepcopy']
 
     @open_file
     def parsing(self, file):
