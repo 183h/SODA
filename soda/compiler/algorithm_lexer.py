@@ -12,14 +12,15 @@ class AlgorithmLexer(object):
         'begin', 'end',
         'SEND', 'BECOME', 'LOG', 'EXEC',
         'if', 'then', 'endif', 'else',
-        'int', 'string'
+        'int', 'string',
+        'ADD', 'REMOVE', 'POP', 'LEN'
     )
 
     tokens = keywords + (
         'IDENTIFIER', 'NUMBER', 'STRING'
     )
 
-    literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/', '<', '>']
+    literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/', '<', '>', '[', ']']
 
     # Ignored characters
     t_ignore = ' \t\n'
