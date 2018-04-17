@@ -116,10 +116,13 @@ class Entity(Thread):
                 exec(_expression, {}, _self.__dict__)
                 _logger.info("Entity: {0} | Action: ASSIGN | Expression : {1} ".format(_self._id, _expression))
             except NameError as _Name:
-                _logger.info("Entity: {0} | Action: ASSIGN | Undefined identifier! -> {1} ".format(_self._id, _Name))
+                _logger.info("Entity: {0} | Action: ASSIGN | Undefined identifier! -> {1} -> {2} ".format(_self._id, _Name, _expression))
                 exit()
             except AttributeError as _Attribute:
-                _logger.info("Entity: {0} | Action: ASSIGN | Wrong type of identifier! -> {1} ".format(_self._id, _expression))
+                _logger.info("Entity: {0} | Action: ASSIGN | Wrong type of identifier! -> {1} -> {2} ".format(_self._id, _Attribute, _expression))
+                exit()
+            except TypeError as _Type:
+                _logger.info("Entity: {0} | Action: ASSIGN | Wrong type of identifier! -> {1} -> {2} ".format(_self._id, _Type, _expression))
                 exit()
 
         @support_arguments
@@ -132,13 +135,13 @@ class Entity(Thread):
             try:
                 result = eval(_expression, {}, _self.__dict__)
             except NameError as _Name:
-                _logger.info("Entity: {0} | Action: EVALUATE | Undefined identifier! -> {1} ".format(_self._id, _Name))
+                _logger.info("Entity: {0} | Action: EVALUATE | Undefined identifier! -> {1} -> {2}  ".format(_self._id, _Name, _expression))
                 exit()
             except AttributeError as _Attribute:
-                _logger.info("Entity: {0} | Action: EVALUATE | Wrong type of identifier! -> {1} ".format(_self._id, _expression))
+                _logger.info("Entity: {0} | Action: EVALUATE | Wrong type of identifier! -> {1} -> {2}  ".format(_self._id, _Attribute, _expression))
                 exit()
             except ValueError as _Value:
-                _logger.info("Entity: {0} | Action: EVALUATE | Wrong value! -> {1} ".format(_self._id, _expression))
+                _logger.info("Entity: {0} | Action: EVALUATE | Wrong value! -> {1} -> {2}  ".format(_self._id, _Value,_expression))
                 exit()
 
             return result
