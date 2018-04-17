@@ -78,10 +78,15 @@ class AlgorithmParser(object):
                       | condition '<' condition
                       | condition '<' '=' condition
                       | condition '>' '=' condition
+                      | condition '!' '=' condition
                       | '(' condition ')'
                       | NUMBER
                       | IDENTIFIER
-                      | LEN '(' IDENTIFIER ')' '''
+                      | LEN '(' IDENTIFIER ')'
+                      | not IDENTIFIER '''
+        if p[1] == 'not':
+            p[1] = 'not '
+
         p[0] = p[:]
         self.condition.append(list(filter(lambda x: x is not None, p[1:])))
 
@@ -263,7 +268,17 @@ class AlgorithmParser(object):
     def p_expression(self, p):
         ''' expression : arithmetic_expr arithmetic_seen
                        | string_expr string_seen_expression
-                       | array_expr array_seen_expression '''
+                       | array_expr array_seen_expression
+                       | boolean_expr boolean_seen_expression '''
+
+    def p_boolean_expr(self, p):
+        ''' boolean_expr : True
+                         | False '''
+        p[0] = p[1]
+
+    def p_boolean_seen_expression(self, p):
+        ''' boolean_seen_expression : '''
+        self.expression = p[-1]
 
     def p_array_seen_expression(self, p):
         ''' array_seen_expression :  '''
