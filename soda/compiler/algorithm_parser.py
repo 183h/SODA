@@ -305,7 +305,8 @@ class AlgorithmParser(object):
                             | arithmetic_expr '/' arithmetic_expr
                             | '(' arithmetic_expr ')'
                             | NUMBER
-                            | identifier_deep_copy '''
+                            | identifier_deep_copy
+                            | LEN '(' IDENTIFIER ')' '''
         p[0] = p[:]
         self.arithmetic_expr.append(list(filter(lambda x: x is not None, p[1:])))
 
