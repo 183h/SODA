@@ -212,6 +212,8 @@ class Entity(Thread):
             if _self._impulse:
                 _self._impulse = False
                 _behavior = 'IMPULSE'
+
+                _logger.info("Entity: {0} | Action: Started by IMPULSE ".format(_self._id))
             else:
                 _self._read_lock = True
                 _behavior = _self._actions["READ"]()

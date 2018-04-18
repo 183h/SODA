@@ -11,7 +11,7 @@ class Simulator(object):
         self.topology = topology
         self.entities = []
 
-    def create_entities(self):
+    def create_entities(self, count_impulses):
         impulse_counter = 0
 
         for e in self.topology.entities:
@@ -29,7 +29,7 @@ class Simulator(object):
             )
 
             if ('IMPULSE' in self.algorithm.states_behaviors[self.topology.entities[e]["state"]]
-                    and impulse_counter < 1):
+                    and impulse_counter < count_impulses):
                 entity._impulse = True
                 impulse_counter += 1
 

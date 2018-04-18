@@ -86,8 +86,9 @@ def parsetop(ctx, topology_file):
 @click.argument('ALGORITHM_FILE', type=click.Path(exists=True))
 @click.argument('TOPOLOGY_FILE', type=click.Path(exists=True))
 @click.option('--no-di', is_flag=True, help='Disable Deadlock Inspector.')
+@click.option('--count-impulses', default=1, help='Number of impulses.')
 @click.pass_context
-def sim(ctx, algorithm_file, topology_file, no_di):
+def sim(ctx, algorithm_file, topology_file, no_di, count_impulses):
     '''
     Compile algorithm, topology and start simulation.
 
@@ -107,5 +108,5 @@ def sim(ctx, algorithm_file, topology_file, no_di):
     topology_parser.parsing(filepath=topology_file)
 
     simulator = Simulator(algorithm, topology)
-    simulator.create_entities()
+    simulator.create_entities(count_impulses)
     simulator.simulate(no_di)
