@@ -61,5 +61,5 @@ class TopologyParser(object):
                 self.topology.neighbours[entity][neighbour]["ip"] = self.topology.entities[neighbour]["ip"]
                 self.topology.neighbours[entity][neighbour]["in_port"] = self.topology.entities[neighbour]["in_port"]
 
-        logger.info("ENTITIES [{}]".format(self.topology.entities))
-        logger.info("NEIGHBOURS [{}]".format(self.topology.neighbours))
+        logger.info("ENTITIES [{}]\n".format(self.topology.entities))
+        logger.info("NEIGHBOURS [{}]\n".format(self.topology.neighbours))

@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from soda.helpers import open_file, flatten
+from soda.helpers import open_file, flatten, str_to_int_or_float
 from logging import getLogger
 from soda.distributed_environment.behavior import Behavior, ActionNode, IfNode, EndIfNode, ElseNode
 
@@ -80,7 +80,7 @@ class AlgorithmParser(object):
                       | condition '>' '=' condition
                       | condition '!' '=' condition
                       | '(' condition ')'
-                      | NUMBER
+                      | number_expr
                       | IDENTIFIER
                       | LEN '(' IDENTIFIER ')'
                       | not IDENTIFIER '''
@@ -151,7 +151,7 @@ class AlgorithmParser(object):
 
     def p_array_remove_value(self, p):
         ''' array_remove_value : IDENTIFIER
-                               | NUMBER
+                               | number_expr
                                | string_expr '''
         p[0] = p[1]
 
@@ -164,7 +164,7 @@ class AlgorithmParser(object):
         p[0] = (p[1], p[3])
 
     def p_array_add_value(self, p):
-        ''' array_add_value : NUMBER
+        ''' array_add_value : number_expr
                             | string_expr
                             | IDENTIFIER '''
         p[0] = p[1]
@@ -175,7 +175,8 @@ class AlgorithmParser(object):
 
     def p_output_type(self, p):
         ''' output_type : int
-                        | string '''
+                        | string
+                        | float '''
         p[0] = p[1]
 
     def p_exec_input(self, p):
@@ -198,17 +199,17 @@ class AlgorithmParser(object):
     def p_read_arg(self, p):
         ''' read_arg : IDENTIFIER identifier_seen_read
                      | STRING string_seen_read
-                     | NUMBER number_seen_read '''
+                     | number_expr number_seen_read '''
         if p[2] == 'IDENTIFIER':
             self.read_arguments += ((p[1], p[2]),)
         elif p[2] == 'STRING':
             self.read_arguments += (p[1],)
-        elif p[2] == 'NUMBER':
-            self.read_arguments += (int(p[1]),)
+        elif p[2] == 'number_expr':
+            self.read_arguments += (str_to_int_or_float(p[1]),)
 
     def p_number_seen_read(self, p):
         ''' number_seen_read : '''
-        p[0] = 'NUMBER'
+        p[0] = 'number_expr'
 
     def p_string_seen_read(self, p):
         ''' string_seen_read : '''
@@ -229,12 +230,12 @@ class AlgorithmParser(object):
     def p_message_part(self, p):
         ''' message_part : STRING string_seen_read
                          | IDENTIFIER identifier_seen_read
-                         | NUMBER number_seen_read '''
+                         | number_expr number_seen_read '''
         if p[2] == 'IDENTIFIER':
             self.send_arguments += (p[1],)
         elif p[2] == 'STRING':
             self.send_arguments += ("'" + p[1] + "'",)
-        elif p[2] == 'NUMBER':
+        elif p[2] == 'number_expr':
             self.send_arguments += (p[1],)
 
     def p_become_arguments(self, p):
@@ -304,7 +305,7 @@ class AlgorithmParser(object):
                             | arithmetic_expr '*' arithmetic_expr
                             | arithmetic_expr '/' arithmetic_expr
                             | '(' arithmetic_expr ')'
-                            | NUMBER
+                            | number_expr
                             | identifier_deep_copy
                             | LEN '(' IDENTIFIER ')' '''
         p[0] = p[:]
@@ -317,6 +318,11 @@ class AlgorithmParser(object):
     def p_string_expr(self, p):
         ''' string_expr : STRING '''
         p[0] = "'" + p[1] + "'"
+
+    def p_number_expr(self, p):
+        ''' number_expr : NUMBER
+                        | '-' NUMBER '''
+        p[0] = p[1:]
 
     def p_error(self, p):
         logger.info("Syntax error in input! -> {}".format(p))
@@ -365,11 +371,11 @@ class AlgorithmParser(object):
 
         self.process_conditions_scopes()
 
-        logger.info("TERM STATES {0}".format(self.algorithm.term_states))
+        logger.info("TERM STATES {0}\n".format(self.algorithm.term_states))
 
         for s, bs in self.algorithm.states_behaviors.items():
             for i, b in bs.items():
-                logger.info("STATE {0} [\n{1} -> \n\t{2}]".format(s, i, b))
+                logger.info("STATE {0} [\n{1} -> \n\t{2}]\n".format(s, i, b))
 
     def process_conditions_scopes(self):
         for s, bs in self.algorithm.states_behaviors.items():

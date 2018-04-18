@@ -1,0 +1,19 @@
+TERM = DONE;
+
+INITIATOR
+    IMPULSE
+    begin
+        n = NEIGHBOURS
+        m = "Hello world"
+        SEND(("Diff message", m), n)
+        BECOME(DONE)
+    end
+
+IDLE
+    READ("Message", m)
+    begin
+        LOG("Entity -> ", ID, " | Received -> ", m)
+        n = NEIGHBOURS
+        SEND((m), n)
+        BECOME(DONE)
+    end

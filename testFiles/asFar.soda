@@ -1,0 +1,42 @@
+TERM = FOLLOWER, LEADER;
+
+ASLEEP
+    IMPULSE
+    begin
+        SEND("Election", id)
+        min = id
+        BECOME(AWAKE)
+    end
+
+    READ("Election", value)
+    begin
+        SEND("Election", id)
+        min = id
+
+        if value < min then
+            SEND("Election", value)
+            min = value
+        endif
+
+        BECOME(AWAKE)
+    end
+
+AWAKE
+    READ("Election", value)
+    begin
+        if value < min then
+            SEND("Election", value)
+            min = value
+        else
+            if value == min then
+                SEND("Notify")
+                BECOME(LEADER)
+            endif
+        endif
+    end
+
+    READ("Notify")
+    begin
+        SEND("Notify")
+        BECOME(FOLLOWER)
+    end

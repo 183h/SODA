@@ -158,7 +158,21 @@ class Entity(Thread):
             if _output_type == 'string':
                 _process_output  = "'" + _completed_process.stdout + "'"
             elif _output_type == 'int':
-                _process_output = int(_completed_process.stdout)
+                try:
+                    _process_output = int(_completed_process.stdout)
+                except ValueError as _Value:
+                    _logger.info(
+                        "Entity: {0} | Action: EXEC | Wrong value for output cast to int! -> {1} -> {2}  ".format(_self._id, _Value,
+                                                                                               _completed_process.stdout))
+                    exit()
+            elif _output_type == 'float':
+                try:
+                    _process_output = float(_completed_process.stdout)
+                except:
+                    _logger.info(
+                        "Entity: {0} | Action: EXEC | Wrong value for output cast to float! -> {1} -> {2}  ".format(_self._id, _Value,
+                                                                                               _completed_process.stdout))
+                    exit()
 
             _expression = "%s = %s" % (_output, _process_output)
             _self._actions["ASSIGN"]((_expression,))

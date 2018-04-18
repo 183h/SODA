@@ -36,6 +36,8 @@ class Simulator(object):
             self.entities.append(entity)
 
     def simulate(self, no_di):
+        logger.info("Start of simulation.")
+
         for e in self.entities:
             e.start()
 
@@ -46,6 +48,7 @@ class Simulator(object):
         for e in self.entities:
             e.join()
 
+        logger.info("End of simulation.\n")
         logger.info("Sent messages per entity (entity id, count of sent messages) -> {0}".format([(e._id, e._count_sent_messages) for e in self.entities]))
         logger.info("Entities state's (entity id, state) -> {0}".format([(e._id, e._state) for e in self.entities]))
 

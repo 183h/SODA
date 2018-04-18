@@ -12,13 +12,13 @@ class AlgorithmLexer(object):
         'begin', 'end',
         'SEND', 'BECOME', 'LOG', 'EXEC',
         'if', 'then', 'endif', 'else',
-        'int', 'string',
+        'int', 'string', 'float',
         'ADD', 'REMOVE', 'POP', 'LEN',
         'True', 'False', 'not'
     )
 
     tokens = keywords + (
-        'IDENTIFIER', 'NUMBER', 'STRING'
+        'IDENTIFIER', 'STRING', 'NUMBER'
     )
 
     literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/', '<', '>', '[', ']', '!']
@@ -44,7 +44,7 @@ class AlgorithmLexer(object):
     #     return t
 
     def t_NUMBER(self, t):
-        r'[1-9]\d*|0'
+        r'[0-9]+(\.[0-9]+)?'
         return t
 
     def t_error(self, t):

@@ -1,0 +1,76 @@
+TERM = DONE;
+
+INITIATOR
+    IMPULSE
+        begin
+            unvisited = NEIGHBOURS
+            initiator = True
+            if LEN(unvisited) != 0 then
+                POP(unvisited, next)
+                SEND(("T"), next)
+                BECOME(VISITED)
+
+            else
+                if not initiator then
+                    SEND(("Return"), entry)
+                endif
+                BECOME(DONE)
+            endif
+        end
+
+IDLE
+    READ("T")
+        begin
+            entry = SENDER
+            unvisited = NEIGHBOURS
+            REMOVE(unvisited, SENDER)
+            initiator = False
+            if LEN(unvisited) != 0 then
+                POP(unvisited, next)
+                SEND(("T"), next)
+                BECOME(VISITED)
+
+            else
+                if not initiator then
+                    SEND(("Return"), entry)
+                endif
+                BECOME(DONE)
+            endif
+        end
+
+VISITED
+    READ("T")
+        begin
+            REMOVE(unvisited, SENDER)
+            SEND(("Backedge"), SENDER)
+        end
+
+    READ("Return")
+        begin
+            if LEN(unvisited) != 0 then
+                POP(unvisited, next)
+                SEND(("T"), next)
+                BECOME(VISITED)
+
+            else
+                if not initiator then
+                    SEND(("Return"), entry)
+                endif
+                BECOME(DONE)
+            endif
+        end
+
+    READ("Backedge")
+        begin
+            if LEN(unvisited) != 0 then
+                POP(unvisited, next)
+                SEND(("T"), next)
+                BECOME(VISITED)
+
+            else
+                if not initiator then
+                    SEND(("Return"), entry)
+                endif
+                BECOME(DONE)
+            endif
+        end

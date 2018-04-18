@@ -1,0 +1,20 @@
+TERM = DONE;
+
+INITIATOR
+    IMPULSE
+    begin
+        input = 9
+        EXEC("cat", int, output, input)
+        n = NEIGHBOURS
+        SEND((output), n)
+        BECOME(DONE)
+    end
+
+IDLE
+    READ(m)
+    begin
+        n = NEIGHBOURS
+        LOG(m)
+        SEND((m), n)
+        BECOME(DONE)
+    end

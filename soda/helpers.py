@@ -24,3 +24,8 @@ def flatten(container):
                 yield j
         else:
             yield i
+
+def str_to_int_or_float(s):
+    f = float(s)
+    i = int(f)
+    return i if i == f else f
