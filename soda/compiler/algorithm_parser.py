@@ -24,7 +24,7 @@ class AlgorithmParser(object):
     def p_term_term(self, p):
         ''' term_term : IDENTIFIER '''
         self.algorithm.term_states.append(p[1])
-        self.algorithm.all_states.append(p[1])
+        self.all_states.append(p[1])
 
     def p_second_section(self, p):
         ''' second_section : states '''
@@ -36,7 +36,7 @@ class AlgorithmParser(object):
     def p_seen_state(self, p):
         ''' seen_state : '''
         self.state = p[-1]
-        self.algorithm.all_states.append(self.state)
+        self.all_states.append(self.state)
 
     def p_states_behaviors(self, p):
         ''' states_behaviors : behavior add_behaviors
@@ -345,6 +345,7 @@ class AlgorithmParser(object):
         self.condition = []
         self.used_states = []
         self.log_arguments = ()
+        self.all_states = []
 
         self.special_identifiers = ['ID', 'NEIGHBOURS', 'SENDER', 'len', 'deepcopy']
 
@@ -365,7 +366,7 @@ class AlgorithmParser(object):
 
         # check if states used in BECOME action are defined
         for s in self.used_states:
-            if s not in self.algorithm.all_states:
+            if s not in self.all_states:
                 logger.info("Trying to change state of entity to undefined state! -> {}".format(s))
                 exit()
 

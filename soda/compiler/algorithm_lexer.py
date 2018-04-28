@@ -39,10 +39,6 @@ class AlgorithmLexer(object):
         r'"(?:[^"\\]|\\.)*"'
         return t
 
-    # def t_EVAL(self, t):
-    #     r'([a-zA-Z][a-zA-Z]*|"(?:[^"\\]|\\.)*")(\+[a-zA-Z][a-zA-Z]*|\+"(?:[^"\\]|\\.)*"){0,}'
-    #     return t
-
     def t_NUMBER(self, t):
         r'[0-9]+(\.[0-9]+)?'
         return t

@@ -1,0 +1,6 @@
+INFO:soda.compiler.topology_lexer:LexToken(DIGIT,'1',1,0)
+INFO:soda.compiler.topology_lexer:LexToken(;,';',1,1)
+INFO:soda.compiler.topology_lexer:LexToken(IP,'127.0.0.1',1,3)
+INFO:soda.compiler.topology_lexer:LexToken(;,';',1,12)
+INFO:soda.compiler.topology_lexer:LexToken(DIGIT,'50',1,14)
+INFO:soda.compiler.topology_lexer:Illegal character \ at line 1

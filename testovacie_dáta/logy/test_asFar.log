@@ -1,0 +1,117 @@
+INFO:soda.compiler.algorithm_parser:TERM STATES ['i_FOLLOWER', 'i_LEADER']
+
+INFO:soda.compiler.algorithm_parser:STATE i_AWAKE [
+('READ', ('"Notify"',)) -> 
+	SEND[Args(('"Notify"'), i_NEIGHBOURS)],
+	BECOME[Args(i_FOLLOWER)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_AWAKE [
+('READ', ('"Election"', ('i_value', 'IDENTIFIER'))) -> 
+	If[Condition(i_value<i_min), Endif(2), Else(0)],
+	SEND[Args(('"Election"', i_value), i_NEIGHBOURS)],
+	ASSIGN[Args(i_min = deepcopy(i_value))],
+	Else[Id(0)],
+	If[Condition(i_value==i_min), Endif(1), Else()],
+	SEND[Args(('"Notify"'), i_NEIGHBOURS)],
+	BECOME[Args(i_LEADER)],
+	EndIf[Id(1)],
+	EndIf[Id(2)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_ASLEEP [
+IMPULSE -> 
+	SEND[Args(('"Election"', i_ID), i_NEIGHBOURS)],
+	ASSIGN[Args(i_min = deepcopy(i_ID))],
+	BECOME[Args(i_AWAKE)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_ASLEEP [
+('READ', ('"Election"', ('i_value', 'IDENTIFIER'))) -> 
+	SEND[Args(('"Election"', i_ID), i_NEIGHBOURS)],
+	ASSIGN[Args(i_min = deepcopy(i_ID))],
+	If[Condition(i_value<i_min), Endif(0), Else()],
+	SEND[Args(('"Election"', i_value), i_NEIGHBOURS)],
+	ASSIGN[Args(i_min = deepcopy(i_value))],
+	EndIf[Id(0)],
+	BECOME[Args(i_AWAKE)]]
+
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.4', 'in_port': '5004', 'state': 'i_ASLEEP'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.3', 'in_port': '5003', 'state': 'i_ASLEEP'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.5', 'in_port': '5005', 'state': 'i_ASLEEP'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.1', 'in_port': '5001', 'state': 'i_ASLEEP'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.2', 'in_port': '5002', 'state': 'i_ASLEEP'}]
+INFO:soda.compiler.topology_parser:NEIGHBOURS [{90: {45: {'ip': '127.0.0.5', 'in_port': '5005'}}, 7: {90: {'ip': '127.0.0.4', 'in_port': '5004'}}, 45: {22: {'ip': '127.0.0.1', 'in_port': '5001'}}, 22: {15: {'ip': '127.0.0.2', 'in_port': '5002'}}, 15: {7: {'ip': '127.0.0.3', 'in_port': '5003'}}}]
+
+INFO:soda.simulator:Start of simulation.
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: Started by IMPULSE 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: SEND | Message : ('"Election"', 90) | To entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: ASSIGN | Expression : i_min = deepcopy(i_ID) 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: BECOME | Old state : i_ASLEEP | New state : i_AWAKE 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: RECEIVED | Message : ('"Election"', 90) | From entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: ASSIGN | Expression : i_value = 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: READ | Message : ('"Election"', 90) | From entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: SEND | Message : ('"Election"', 45) | To entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: ASSIGN | Expression : i_min = deepcopy(i_ID) 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: BECOME | Old state : i_ASLEEP | New state : i_AWAKE 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: RECEIVED | Message : ('"Election"', 45) | From entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: ASSIGN | Expression : i_value = 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: READ | Message : ('"Election"', 45) | From entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: SEND | Message : ('"Election"', 22) | To entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: ASSIGN | Expression : i_min = deepcopy(i_ID) 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: BECOME | Old state : i_ASLEEP | New state : i_AWAKE 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: RECEIVED | Message : ('"Election"', 22) | From entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: ASSIGN | Expression : i_value = 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: READ | Message : ('"Election"', 22) | From entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: SEND | Message : ('"Election"', 15) | To entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: ASSIGN | Expression : i_min = deepcopy(i_ID) 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: BECOME | Old state : i_ASLEEP | New state : i_AWAKE 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: RECEIVED | Message : ('"Election"', 15) | From entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: ASSIGN | Expression : i_value = 15 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: READ | Message : ('"Election"', 15) | From entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: SEND | Message : ('"Election"', 7) | To entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: ASSIGN | Expression : i_min = deepcopy(i_ID) 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: BECOME | Old state : i_ASLEEP | New state : i_AWAKE 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: RECEIVED | Message : ('"Election"', 7) | From entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: ASSIGN | Expression : i_value = 7 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: READ | Message : ('"Election"', 7) | From entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: SEND | Message : ('"Election"', 7) | To entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: ASSIGN | Expression : i_min = deepcopy(i_value) 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: RECEIVED | Message : ('"Election"', 7) | From entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: ASSIGN | Expression : i_value = 7 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: READ | Message : ('"Election"', 7) | From entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: SEND | Message : ('"Election"', 7) | To entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: ASSIGN | Expression : i_min = deepcopy(i_value) 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: RECEIVED | Message : ('"Election"', 7) | From entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: ASSIGN | Expression : i_value = 7 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: READ | Message : ('"Election"', 7) | From entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: SEND | Message : ('"Election"', 7) | To entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: ASSIGN | Expression : i_min = deepcopy(i_value) 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: RECEIVED | Message : ('"Election"', 7) | From entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: ASSIGN | Expression : i_value = 7 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: READ | Message : ('"Election"', 7) | From entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: SEND | Message : ('"Election"', 7) | To entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: ASSIGN | Expression : i_min = deepcopy(i_value) 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: RECEIVED | Message : ('"Election"', 7) | From entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: ASSIGN | Expression : i_value = 7 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: READ | Message : ('"Election"', 7) | From entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: SEND | Message : ('"Notify"',) | To entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 7 | Action: BECOME | Old state : i_AWAKE | New state : i_LEADER 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: RECEIVED | Message : ('"Notify"',) | From entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: READ | Message : ('"Notify"',) | From entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: SEND | Message : ('"Notify"',) | To entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 90 | Action: BECOME | Old state : i_AWAKE | New state : i_FOLLOWER 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: RECEIVED | Message : ('"Notify"',) | From entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: READ | Message : ('"Notify"',) | From entity : 90 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: SEND | Message : ('"Notify"',) | To entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 45 | Action: BECOME | Old state : i_AWAKE | New state : i_FOLLOWER 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: RECEIVED | Message : ('"Notify"',) | From entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: READ | Message : ('"Notify"',) | From entity : 45 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: SEND | Message : ('"Notify"',) | To entity : 15 
+INFO:soda.distributed_environment.entity:Entity: 22 | Action: BECOME | Old state : i_AWAKE | New state : i_FOLLOWER 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: RECEIVED | Message : ('"Notify"',) | From entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: READ | Message : ('"Notify"',) | From entity : 22 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: SEND | Message : ('"Notify"',) | To entity : 7 
+INFO:soda.distributed_environment.entity:Entity: 15 | Action: BECOME | Old state : i_AWAKE | New state : i_FOLLOWER 
+INFO:soda.simulator:End of simulation.
+
+INFO:soda.simulator:Sent messages per entity (entity id, count of sent messages) -> [(90, 3), (7, 2), (45, 3), (22, 3), (15, 3)]
+INFO:soda.simulator:Entities state's (entity id, state) -> [(90, 'i_FOLLOWER'), (7, 'i_LEADER'), (45, 'i_FOLLOWER'), (22, 'i_FOLLOWER'), (15, 'i_FOLLOWER')]
+INFO:soda.simulator:Total count of sent messages -> 14

@@ -1,0 +1,61 @@
+INFO:soda.compiler.algorithm_parser:TERM STATES ['i_DONE']
+
+INFO:soda.compiler.algorithm_parser:STATE i_INITIATOR [
+IMPULSE -> 
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	ASSIGN[Args(i_m = '"Hello world"')],
+	SEND[Args((i_m), i_n)],
+	BECOME[Args(i_DONE)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_IDLE [
+('READ', (('i_m', 'IDENTIFIER'),)) -> 
+	LOG[Args(str("Entity -> ")+str(i_ID)+str(" | Received -> ")+str(i_m))],
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	SEND[Args((i_m), i_n)],
+	BECOME[Args(i_DONE)]]
+
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.1', 'in_port': '5001', 'state': 'i_INITIATOR'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.2', 'in_port': '5002', 'state': 'i_IDLE'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.3', 'in_port': '5003', 'state': 'i_IDLE'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.4', 'in_port': '5004', 'state': 'i_IDLE'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'ip': '127.0.0.5', 'in_port': '5005', 'state': 'i_IDLE'}]
+INFO:soda.compiler.topology_parser:NEIGHBOURS [{1: {2: {'ip': '127.0.0.2', 'in_port': '5002'}, 3: {'ip': '127.0.0.3', 'in_port': '5003'}}, 2: {1: {'ip': '127.0.0.1', 'in_port': '5001'}, 5: {'ip': '127.0.0.5', 'in_port': '5005'}}, 3: {1: {'ip': '127.0.0.1', 'in_port': '5001'}, 4: {'ip': '127.0.0.4', 'in_port': '5004'}}, 4: {3: {'ip': '127.0.0.3', 'in_port': '5003'}}, 5: {2: {'ip': '127.0.0.2', 'in_port': '5002'}}}]
+
+INFO:soda.simulator:Start of simulation.
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: Started by IMPULSE 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_m = '"Hello world"' 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Hello world"',) | To entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Hello world"',) | To entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: BECOME | Old state : i_INITIATOR | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: RECEIVED | Message : ('"Hello world"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: ASSIGN | Expression : i_m = '"Hello world"' 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: RECEIVED | Message : ('"Hello world"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: READ | Message : ('"Hello world"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: ASSIGN | Expression : i_m = '"Hello world"' 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: READ | Message : ('"Hello world"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: SEND | Message : ('"Hello world"',) | To entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: SEND | Message : ('"Hello world"',) | To entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: RECEIVED | Message : ('"Hello world"',) | From entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: SEND | Message : ('"Hello world"',) | To entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_m = '"Hello world"' 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: SEND | Message : ('"Hello world"',) | To entity : 5 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: READ | Message : ('"Hello world"',) | From entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: RECEIVED | Message : ('"Hello world"',) | From entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: ASSIGN | Expression : i_m = '"Hello world"' 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: SEND | Message : ('"Hello world"',) | To entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: READ | Message : ('"Hello world"',) | From entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: SEND | Message : ('"Hello world"',) | To entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.simulator:End of simulation.
+
+INFO:soda.simulator:Sent messages per entity (entity id, count of sent messages) -> [(1, 2), (2, 2), (3, 2), (4, 1), (5, 1)]
+INFO:soda.simulator:Entities state's (entity id, state) -> [(1, 'i_DONE'), (2, 'i_DONE'), (3, 'i_DONE'), (4, 'i_DONE'), (5, 'i_DONE')]
+INFO:soda.simulator:Total count of sent messages -> 8

@@ -20,6 +20,10 @@ class TopologyParser(object):
         if p[7] == 'EXTERNAL':
             self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5]}
         else:
+            if p[1] in self.topology.entities.keys():
+                logger.info("Syntax error in input! -> Entity with id {0} already defined!".format(p[1]))
+                exit()
+
             self.topology.entities[p[1]] = {"ip": p[3], "in_port": p[5], "state": p[9]}
             self.topology.neighbours[p[1]] = {int(n) : {"ip": None, "in_port": None} for n in self.entity_neighbours}
             self.entity_neighbours = []
@@ -58,6 +62,10 @@ class TopologyParser(object):
         # update entities neighbours with ip, in_port
         for entity in self.topology.neighbours:
             for neighbour in self.topology.neighbours[entity]:
+                if neighbour not in self.topology.entities.keys():
+                    logger.info("Syntax error in input! -> Undefined neighbour {0} of entity {1}".format(neighbour, entity))
+                    exit()
+
                 self.topology.neighbours[entity][neighbour]["ip"] = self.topology.entities[neighbour]["ip"]
                 self.topology.neighbours[entity][neighbour]["in_port"] = self.topology.entities[neighbour]["in_port"]
 

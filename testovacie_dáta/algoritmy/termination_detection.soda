@@ -1,0 +1,50 @@
+TERM = DONE;
+
+INITIATOR
+    IMPULSE
+    begin
+        controlAgent = True
+        w = 10
+        s = 10 / (LEN(NEIGHBOURS) + 1)
+        sumW = s
+
+        SEND(("COMPUTATION", s), NEIGHBOURS)
+    end
+
+    READ("Completed Task", v)
+    begin
+        sumW = sumW + v
+
+        if sumW == w then
+            SEND(("Termination"), NEIGHBOURS)
+            BECOME(DONE)
+        endif
+    end
+
+IDLE
+    READ("COMPUTATION", t)
+    begin
+        m = t / LEN(NEIGHBOURS)
+        n = NEIGHBOURS
+        REMOVE(n, SENDER)
+        LOG(m)
+        SEND(("COMPUTATION", m), n)
+        SEND(("Completed Task", m), SENDER)
+    end
+
+    READ("Completed Task", temp)
+    begin
+        n = NEIGHBOURS
+        REMOVE(n, SENDER)
+
+        SEND(("Completed Task", m), n)
+    end
+
+    READ("Termination")
+    begin
+        n = NEIGHBOURS
+        REMOVE(n, SENDER)
+
+        SEND(("Termination"), n)
+        BECOME(DONE)
+    end

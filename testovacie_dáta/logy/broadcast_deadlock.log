@@ -1,0 +1,36 @@
+INFO:soda.compiler.algorithm_parser:TERM STATES ['i_DONE']
+
+INFO:soda.compiler.algorithm_parser:STATE i_INITIATOR [
+IMPULSE -> 
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	ASSIGN[Args(i_m = '"Hello world"')],
+	SEND[Args(('"Diff message"', i_m), i_n)],
+	BECOME[Args(i_DONE)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_IDLE [
+('READ', ('"Message"', ('i_m', 'IDENTIFIER'))) -> 
+	LOG[Args(str("Entity -> ")+str(i_ID)+str(" | Received -> ")+str(i_m))],
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	SEND[Args((i_m), i_n)],
+	BECOME[Args(i_DONE)]]
+
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_INITIATOR', 'in_port': '5001', 'ip': '127.0.0.1'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5002', 'ip': '127.0.0.2'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5003', 'ip': '127.0.0.3'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5004', 'ip': '127.0.0.4'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5005', 'ip': '127.0.0.5'}]
+INFO:soda.compiler.topology_parser:NEIGHBOURS [{1: {2: {'in_port': '5002', 'ip': '127.0.0.2'}, 3: {'in_port': '5003', 'ip': '127.0.0.3'}}, 2: {1: {'in_port': '5001', 'ip': '127.0.0.1'}, 5: {'in_port': '5005', 'ip': '127.0.0.5'}}, 3: {1: {'in_port': '5001', 'ip': '127.0.0.1'}, 4: {'in_port': '5004', 'ip': '127.0.0.4'}}, 4: {3: {'in_port': '5003', 'ip': '127.0.0.3'}}, 5: {2: {'in_port': '5002', 'ip': '127.0.0.2'}}}]
+
+INFO:soda.simulator:Start of simulation.
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: Started by IMPULSE 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_m = '"Hello world"' 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Diff message"', '"Hello world"') | To entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Diff message"', '"Hello world"') | To entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: BECOME | Old state : i_INITIATOR | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: RECEIVED | Message : ('"Diff message"', '"Hello world"') | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: RECEIVED | Message : ('"Diff message"', '"Hello world"') | From entity : 1 
+INFO:soda.deadlock_inspector:Sent messages per entity (entity id, count of sent messages) -> [(1, 2), (2, 0), (3, 0), (4, 0), (5, 0)]
+INFO:soda.deadlock_inspector:Entities state's (entity id, state) -> [(1, 'i_DONE'), (2, 'i_IDLE'), (3, 'i_IDLE'), (4, 'i_IDLE'), (5, 'i_IDLE')]
+INFO:soda.deadlock_inspector:Total count of sent messages -> 2
+INFO:soda.deadlock_inspector:DEADLOCK!

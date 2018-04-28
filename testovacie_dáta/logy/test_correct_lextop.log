@@ -1,0 +1,4 @@
+INFO:soda.compiler.topology_lexer:LexToken(EXTERNAL,'EXTERNAL',1,0)
+INFO:soda.compiler.topology_lexer:LexToken(IP,'192.10.10.1',1,0)
+INFO:soda.compiler.topology_lexer:LexToken(STATE,'i_STATE',1,0)
+INFO:soda.compiler.topology_lexer:LexToken(DIGIT,'10',1,0)

@@ -1,0 +1,65 @@
+INFO:soda.compiler.algorithm_parser:TERM STATES ['i_DONE']
+
+INFO:soda.compiler.algorithm_parser:STATE i_VISITED [
+('READ', ('"Return"',)) -> 
+	If[Condition(LEN(i_unvisited)!=0), Endif(2), Else(0)],
+	POP[Args(i_unvisited, i_next)],
+	SEND[Args(('"T"'), i_next)],
+	BECOME[Args(i_VISITED)],
+	Else[Id(0)],
+	If[Condition(not i_initiator), Endif(1), Else()],
+	SEND[Args(('"Return"'), i_entry)],
+	EndIf[Id(1)],
+	BECOME[Args(i_DONE)],
+	EndIf[Id(2)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_VISITED [
+('READ', ('"T"',)) -> 
+	REMOVE[Args(i_unvisited, i_SENDER)],
+	SEND[Args(('"Backedge"'), i_SENDER)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_VISITED [
+('READ', ('"Backedge"',)) -> 
+	If[Condition(LEN(i_unvisited)!=0), Endif(2), Else(0)],
+	POP[Args(i_unvisited, i_next)],
+	SEND[Args(('"T"'), i_next)],
+	BECOME[Args(i_VISITED)],
+	Else[Id(0)],
+	If[Condition(not i_initiator), Endif(1), Else()],
+	SEND[Args(('"Return"'), i_entry)],
+	EndIf[Id(1)],
+	BECOME[Args(i_DONE)],
+	EndIf[Id(2)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_INITIATOR [
+IMPULSE -> 
+	ASSIGN[Args(i_unvisited = deepcopy(i_NEIGHBOURS))],
+	ASSIGN[Args(i_initiator = True)],
+	If[Condition(LEN(i_unvisited)!=0), Endif(2), Else(0)],
+	POP[Args(i_unvisited, i_next)],
+	SEND[Args(('"T"'), i_next)],
+	BECOME[Args(i_VISITED)],
+	Else[Id(0)],
+	If[Condition(not i_initiator), Endif(1), Else()],
+	SEND[Args(('"Return"'), i_entry)],
+	EndIf[Id(1)],
+	BECOME[Args(i_DONE)],
+	EndIf[Id(2)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_IDLE [
+('READ', ('"T"',)) -> 
+	ASSIGN[Args(i_entry = deepcopy(i_SENDER))],
+	ASSIGN[Args(i_unvisited = deepcopy(i_NEIGHBOURS))],
+	REMOVE[Args(i_unvisited, i_SENDER)],
+	ASSIGN[Args(i_initiator = False)],
+	If[Condition(LEN(i_unvisited)!=0), Endif(2), Else(0)],
+	POP[Args(i_unvisited, i_next)],
+	SEND[Args(('"T"'), i_next)],
+	BECOME[Args(i_VISITED)],
+	Else[Id(0)],
+	If[Condition(not i_initiator), Endif(1), Else()],
+	SEND[Args(('"Return"'), i_entry)],
+	EndIf[Id(1)],
+	BECOME[Args(i_DONE)],
+	EndIf[Id(2)]]
+

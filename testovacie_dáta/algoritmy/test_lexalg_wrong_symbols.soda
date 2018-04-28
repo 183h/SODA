@@ -1,0 +1,19 @@
+TERM = DONE;
+
+INITIATOR§
+    IMPULSE
+    begin
+        n = NEIGHBOURĐS
+        m = "Hello world"
+        SEND((m), n)
+        BECOME(DONEň)
+    end
+
+IDLE
+    READ(m)
+    begin
+        LOG("Entity -> ", ID, " | Received -> ", m)
+        n = NEIGHBOURS
+        SEND((m), ý)
+        BECOME(DONE)
+    end

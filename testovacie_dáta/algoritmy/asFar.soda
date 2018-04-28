@@ -3,18 +3,18 @@ TERM = FOLLOWER, LEADER;
 ASLEEP
     IMPULSE
     begin
-        SEND("Election", id)
-        min = id
+        SEND(("Election", ID), NEIGHBOURS)
+        min = ID
         BECOME(AWAKE)
     end
 
     READ("Election", value)
     begin
-        SEND("Election", id)
-        min = id
+        SEND(("Election", ID), NEIGHBOURS)
+        min = ID
 
         if value < min then
-            SEND("Election", value)
+            SEND(("Election", value), NEIGHBOURS)
             min = value
         endif
 
@@ -25,11 +25,11 @@ AWAKE
     READ("Election", value)
     begin
         if value < min then
-            SEND("Election", value)
+            SEND(("Election", value), NEIGHBOURS)
             min = value
         else
             if value == min then
-                SEND("Notify")
+                SEND(("Notify"), NEIGHBOURS)
                 BECOME(LEADER)
             endif
         endif
@@ -37,6 +37,6 @@ AWAKE
 
     READ("Notify")
     begin
-        SEND("Notify")
+        SEND(("Notify"), NEIGHBOURS)
         BECOME(FOLLOWER)
     end

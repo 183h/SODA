@@ -67,6 +67,10 @@ class Entity(Thread):
                                 for _i, _j in zip(_pattern[1], _received_message):
                                     if type(_i) is tuple:
                                         _identifier, _ = _i
+
+                                        if type(_j) is str:
+                                            _j = "'" + _j + "'"
+
                                         _expression = "%s = %s" % (_identifier, _j)
 
                                         _self._actions["ASSIGN"]((_expression, ))

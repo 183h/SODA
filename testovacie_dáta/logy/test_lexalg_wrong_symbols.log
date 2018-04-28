@@ -1,0 +1,6 @@
+INFO:soda.compiler.algorithm_lexer:LexToken(TERM,'TERM',1,0)
+INFO:soda.compiler.algorithm_lexer:LexToken(=,'=',1,5)
+INFO:soda.compiler.algorithm_lexer:LexToken(IDENTIFIER,'i_DONE',1,7)
+INFO:soda.compiler.algorithm_lexer:LexToken(;,';',1,11)
+INFO:soda.compiler.algorithm_lexer:LexToken(IDENTIFIER,'i_INITIATOR',1,0)
+INFO:soda.compiler.algorithm_lexer:Illegal character § at line 1

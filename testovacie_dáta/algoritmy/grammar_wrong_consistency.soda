@@ -1,0 +1,20 @@
+TERM = DONE;
+BECOME(DONE)
+
+INITIATOR
+    IMPULSE
+    begin
+        n = NEIGHBOURS
+        m = "Hello world"
+        SEND((m), n)
+        BECOME(DONE)
+    end
+
+IDLE
+    READ(m)
+    begin
+        LOG("Entity -> ", ID, " | Received -> ", m)
+        n = NEIGHBOURS
+    end
+        SEND((m), n)
+        BECOME(DONE)

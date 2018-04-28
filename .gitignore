@@ -44,8 +44,8 @@ coverage.xml
 parsetab.py
 parser.out
 
-# logging files
-*.log
+# default logging file
+simulation.log
 
 # PyCharm
 .idea/
