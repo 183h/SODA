@@ -1,0 +1,128 @@
+INFO:soda.compiler.algorithm_parser:TERM STATES ['i_DONE']
+
+INFO:soda.compiler.algorithm_parser:STATE i_IDLE [
+('READ', ('"COMPUTATION"', ('i_t', 'IDENTIFIER'))) -> 
+	ASSIGN[Args(i_m = deepcopy(i_t)/LEN(i_NEIGHBOURS))],
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	REMOVE[Args(i_n, i_SENDER)],
+	LOG[Args(str(i_m))],
+	SEND[Args(('"COMPUTATION"', i_m), i_n)],
+	SEND[Args(('"Completed Task"', i_m), i_SENDER)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_IDLE [
+('READ', ('"Completed Task"', ('i_temp', 'IDENTIFIER'))) -> 
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	REMOVE[Args(i_n, i_SENDER)],
+	SEND[Args(('"Completed Task"', i_m), i_n)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_IDLE [
+('READ', ('"Termination"',)) -> 
+	ASSIGN[Args(i_n = deepcopy(i_NEIGHBOURS))],
+	REMOVE[Args(i_n, i_SENDER)],
+	SEND[Args(('"Termination"'), i_n)],
+	BECOME[Args(i_DONE)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_INITIATOR [
+IMPULSE -> 
+	ASSIGN[Args(i_controlAgent = True)],
+	ASSIGN[Args(i_w = 10)],
+	ASSIGN[Args(i_s = 10/(LEN(i_NEIGHBOURS)+1))],
+	ASSIGN[Args(i_sumW = deepcopy(i_s))],
+	SEND[Args(('"COMPUTATION"', i_s), i_NEIGHBOURS)]]
+
+INFO:soda.compiler.algorithm_parser:STATE i_INITIATOR [
+('READ', ('"Completed Task"', ('i_v', 'IDENTIFIER'))) -> 
+	ASSIGN[Args(i_sumW = deepcopy(i_sumW)+deepcopy(i_v))],
+	If[Condition(i_sumW==i_w), Endif(0), Else()],
+	SEND[Args(('"Termination"'), i_NEIGHBOURS)],
+	BECOME[Args(i_DONE)],
+	EndIf[Id(0)]]
+
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_INITIATOR', 'in_port': '5001', 'ip': '127.0.0.1'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5002', 'ip': '127.0.0.2'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5003', 'ip': '127.0.0.3'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5004', 'ip': '127.0.0.4'}]
+INFO:soda.compiler.topology_parser:ENTITY [{'state': 'i_IDLE', 'in_port': '5005', 'ip': '127.0.0.5'}]
+INFO:soda.compiler.topology_parser:NEIGHBOURS [{1: {2: {'in_port': '5002', 'ip': '127.0.0.2'}, 3: {'in_port': '5003', 'ip': '127.0.0.3'}, 4: {'in_port': '5004', 'ip': '127.0.0.4'}}, 2: {1: {'in_port': '5001', 'ip': '127.0.0.1'}}, 3: {1: {'in_port': '5001', 'ip': '127.0.0.1'}}, 4: {1: {'in_port': '5001', 'ip': '127.0.0.1'}, 5: {'in_port': '5005', 'ip': '127.0.0.5'}}, 5: {4: {'in_port': '5004', 'ip': '127.0.0.4'}}}]
+
+INFO:soda.simulator:Start of simulation.
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: Started by IMPULSE 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_controlAgent = True 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_w = 10 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_s = 10/(LEN(i_NEIGHBOURS)+1) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_sumW = deepcopy(i_s) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"COMPUTATION"', 2.5) | To entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"COMPUTATION"', 2.5) | To entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: RECEIVED | Message : ('"COMPUTATION"', 2.5) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: RECEIVED | Message : ('"COMPUTATION"', 2.5) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: ASSIGN | Expression : i_t = 2.5 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"COMPUTATION"', 2.5) | To entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: ASSIGN | Expression : i_t = 2.5 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: RECEIVED | Message : ('"COMPUTATION"', 2.5) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: READ | Message : ('"COMPUTATION"', 2.5) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: READ | Message : ('"COMPUTATION"', 2.5) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_t = 2.5 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: ASSIGN | Expression : i_m = deepcopy(i_t)/LEN(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: ASSIGN | Expression : i_m = deepcopy(i_t)/LEN(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: READ | Message : ('"COMPUTATION"', 2.5) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_m = deepcopy(i_t)/LEN(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: SEND | Message : ('"Completed Task"', 2.5) | To entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: SEND | Message : ('"Completed Task"', 2.5) | To entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: RECEIVED | Message : ('"Completed Task"', 2.5) | From entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_v = 2.5 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: READ | Message : ('"Completed Task"', 2.5) | From entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_sumW = deepcopy(i_sumW)+deepcopy(i_v) 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: SEND | Message : ('"COMPUTATION"', 1.25) | To entity : 5 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: RECEIVED | Message : ('"COMPUTATION"', 1.25) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: RECEIVED | Message : ('"Completed Task"', 2.5) | From entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: SEND | Message : ('"Completed Task"', 1.25) | To entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: ASSIGN | Expression : i_t = 1.25 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_v = 2.5 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: READ | Message : ('"COMPUTATION"', 1.25) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: READ | Message : ('"Completed Task"', 2.5) | From entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: ASSIGN | Expression : i_m = deepcopy(i_t)/LEN(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_sumW = deepcopy(i_sumW)+deepcopy(i_v) 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: RECEIVED | Message : ('"Completed Task"', 1.25) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: SEND | Message : ('"Completed Task"', 1.25) | To entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_v = 1.25 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: RECEIVED | Message : ('"Completed Task"', 1.25) | From entity : 5 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: READ | Message : ('"Completed Task"', 1.25) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_temp = 1.25 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_sumW = deepcopy(i_sumW)+deepcopy(i_v) 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: READ | Message : ('"Completed Task"', 1.25) | From entity : 5 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: SEND | Message : ('"Completed Task"', 1.25) | To entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: RECEIVED | Message : ('"Completed Task"', 1.25) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_v = 1.25 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: READ | Message : ('"Completed Task"', 1.25) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: ASSIGN | Expression : i_sumW = deepcopy(i_sumW)+deepcopy(i_v) 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Termination"',) | To entity : 2 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Termination"',) | To entity : 3 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: SEND | Message : ('"Termination"',) | To entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: RECEIVED | Message : ('"Termination"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 1 | Action: BECOME | Old state : i_INITIATOR | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: RECEIVED | Message : ('"Termination"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: READ | Message : ('"Termination"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: RECEIVED | Message : ('"Termination"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: READ | Message : ('"Termination"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: READ | Message : ('"Termination"',) | From entity : 1 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 2 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 3 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: SEND | Message : ('"Termination"',) | To entity : 5 
+INFO:soda.distributed_environment.entity:Entity: 4 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: RECEIVED | Message : ('"Termination"',) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: READ | Message : ('"Termination"',) | From entity : 4 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: ASSIGN | Expression : i_n = deepcopy(i_NEIGHBOURS) 
+INFO:soda.distributed_environment.entity:Entity: 5 | Action: BECOME | Old state : i_IDLE | New state : i_DONE 
+INFO:soda.simulator:End of simulation.
+
+INFO:soda.simulator:Sent messages per entity (entity id, count of sent messages) -> [(1, 6), (2, 1), (3, 1), (4, 4), (5, 1)]
+INFO:soda.simulator:Entities state's (entity id, state) -> [(1, 'i_DONE'), (2, 'i_DONE'), (3, 'i_DONE'), (4, 'i_DONE'), (5, 'i_DONE')]
+INFO:soda.simulator:Total count of sent messages -> 13

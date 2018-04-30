@@ -158,7 +158,7 @@ class Entity(Thread):
 
             _completed_process = run(_command, input=str(_input), stdout=PIPE, universal_newlines=True, shell=True)
 
-            # set output type
+            # cast to correct output type
             if _output_type == 'string':
                 _process_output  = "'" + _completed_process.stdout + "'"
             elif _output_type == 'int':
@@ -172,7 +172,7 @@ class Entity(Thread):
             elif _output_type == 'float':
                 try:
                     _process_output = float(_completed_process.stdout)
-                except:
+                except  ValueError as _Value:
                     _logger.info(
                         "Entity: {0} | Action: EXEC | Wrong value for output cast to float! -> {1} -> {2}  ".format(_self._id, _Value,
                                                                                                _completed_process.stdout))
@@ -230,5 +230,8 @@ class Entity(Thread):
                     _next_node = _n.execute(_self)
                 elif type(_n) is IfNode:
                     _next_node = _n.execute(_self)
+
+                if _next_node == "BECOME":
+                    break
 
                 _n = _next_node

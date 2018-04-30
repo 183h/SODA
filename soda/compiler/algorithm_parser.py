@@ -49,6 +49,10 @@ class AlgorithmParser(object):
 
     def p_behavior(self, p):
         ''' behavior : initiation_event begin statements end '''
+        if p[1] in self.state_behaviors:
+            logger.info("State with same initiation action already defined! -> {}".format(p[1]))
+            exit()
+
         self.state_behaviors[p[1]] = self.behavior
         self.behavior = Behavior()
         self.jump_ids = 0
@@ -193,8 +197,7 @@ class AlgorithmParser(object):
 
     def p_read_arguments(self, p):
         ''' read_arguments : read_arg
-                           | read_arg ',' read_arguments
-                           | NONE '''
+                           | read_arg ',' read_arguments '''
 
     def p_read_arg(self, p):
         ''' read_arg : IDENTIFIER identifier_seen_read
@@ -249,7 +252,8 @@ class AlgorithmParser(object):
 
     def p_log_arg(self, p):
         ''' log_arg : STRING
-                    | IDENTIFIER '''
+                    | IDENTIFIER
+                    | NUMBER'''
         self.log_arguments += (p[1], )
 
     def p_NONE(self, p):

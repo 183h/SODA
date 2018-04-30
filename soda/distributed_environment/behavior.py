@@ -46,6 +46,9 @@ class ActionNode(Node):
         action, arguments = self.action, self.arguments
         entity._actions[action](arguments)
 
+        if action == "BECOME":
+            return "BECOME"
+
         return self.next
 
 
@@ -70,6 +73,10 @@ class IfNode(Node):
             while (type(n) is not EndIfNode
                     and type(n) is not ElseNode):
                 next_node = n.execute(entity)
+
+                if next_node == "BECOME":
+                    return "BECOME"
+
                 n = next_node
 
             if type(n) is ElseNode:
@@ -84,6 +91,10 @@ class IfNode(Node):
 
                 while type(n) is not EndIfNode:
                     next_node = n.execute(entity)
+
+                    if next_node == "BECOME":
+                        return "BECOME"
+
                     n = next_node
 
                 return n.next
