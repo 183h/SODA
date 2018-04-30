@@ -37,11 +37,19 @@ class TopologyParser(object):
         logger.info("Syntax error in input! -> {}".format(p))
         exit()
 
+    # Argument lexer reprezentuje lexikálny analyzátor.
+    # Argumen topology reprezentuje dátovú štruktúru, do ktorej sa uloží spracovaná
+    # topológia.
     def build(self, lexer, topology):
         self.lexer = lexer
         self.topology = topology
+
+        # Syntaktický analyzátor potrebuje mapu tokenov z lexikálneho analyzátora.
         self.tokens = lexer.tokens
+
+        # Syntaktický analyzátor sa vygeneruje z gramatiky, ktorá ja definovaná v triede, prostredníctvom metódy yacc().
         self._parser = yacc.yacc(module=self, debug=False)
+
         self.entity_neighbours = []
 
     @open_file

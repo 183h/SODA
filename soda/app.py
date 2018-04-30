@@ -83,6 +83,10 @@ def parsetop(ctx, topology_file):
 
 
 @main.command(short_help='Run simulation.')
+# Pomocou dekorátorov argument, option definujeme povinné argumenty a
+# voliteľné nastavenia príkazu. Argument algorithm_file slúži pre vstupný súbor s
+# opisom algoritmu a argument topology_file slúži pre vstupný súbor s opisom
+# topológie.
 @click.argument('ALGORITHM_FILE', type=click.Path(exists=True))
 @click.argument('TOPOLOGY_FILE', type=click.Path(exists=True))
 @click.option('--no-di', is_flag=True, help='Disable Deadlock Inspector.')
@@ -96,17 +100,19 @@ def sim(ctx, algorithm_file, topology_file, no_di, count_impulses):
         TOPOLOGY_FILE - path to file with topology description.
     '''
 
-    algorithm = Algorithm()
+    algorithm = Algorithm() # Vytvorenie dátovej štruktúry pre opis algoritmu.
     algorithm_parser = AlgorithmParser()
-    topology = Topology()
+
+    topology = Topology() # Vytvorenie dátovej štruktúry pre opis topológie.
     topology_parser = TopologyParser()
 
+    # Syntaktická analýza algoritmu a topológie.
     algorithm_parser.build(ctx.obj['algorithm_lexer'], algorithm)
     algorithm_parser.parsing(filepath=algorithm_file)
-
     topology_parser.build(ctx.obj['topology_lexer'], topology)
     topology_parser.parsing(filepath=topology_file)
 
+    # Vytvorenie entít a spustenie simulácie.
     simulator = Simulator(algorithm, topology)
     simulator.create_entities(count_impulses)
     simulator.simulate(no_di)

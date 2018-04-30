@@ -44,12 +44,14 @@ class ActionNode(Node):
 
     def execute(self, entity):
         action, arguments = self.action, self.arguments
+        # Metóda vykoná akciu zodpovedajúcu kľúču action v slovníku entity._actions a
+        # zároveň tejto metóde odovzdá argumenty z premennej arguments.
         entity._actions[action](arguments)
 
         if action == "BECOME":
             return "BECOME"
 
-        return self.next
+        return self.next # Po ukončení metóda vráti nasledujúci uzol v zozname.
 
 
 class IfNode(Node):
@@ -65,11 +67,16 @@ class IfNode(Node):
                 ', Else(' + (str(self.jump_else.id) if self.jump_else is not None else '') + ")]")
 
     def execute(self, entity):
+        # Na začiatku testujeme, či platí podmienka uvedená v atribúte self.condition.
+        # Pre toto testovanie používame akciu EVALUATE, ktorú obsahuje entita.
         condition_result = entity._actions["EVALUATE"](self.condition)
 
         if condition_result:
             n = self.next
-
+            # Ak podmienka platí začneme vykonávať uzly, ktoré nasledujú za uzlom
+            # IfNode pokiaľ nenarazíme na uzol EndIfNode alebo ElseNode. Ak narazíme
+            # na uzol EndIfNode, ElseNode tak  metódu execute() ukončíme a vrátime
+            # nasledujúci uzol tohto uzla v zozname.
             while (type(n) is not EndIfNode
                     and type(n) is not ElseNode):
                 next_node = n.execute(entity)
@@ -79,13 +86,20 @@ class IfNode(Node):
 
                 n = next_node
 
+            # Ak narazíme na uzol ElseNode nastavíme nasledujúci uzol na koniec
+            # rozsahu ElseNode uzla. Podmienka platí takže správanie príslušné
+            # ElseNode uzlu musíme preskočiť.
             if type(n) is ElseNode:
                 n = self.jump_endif
 
             return n.next
         else:
+            # Ak podmienka neplatí a IfNode nemá naviazaný ElseNode môžeme skočiť
+            # na EndIfNode a pokračovať.
             if self.jump_else is None:
                 return self.jump_endif.next
+            # Ak IfNode má ElseNode tak vykonáme uzly, ktoré nasledujú za ElseNode
+            # pokiaľ nenarazíme na IfNode.
             else:
                 n = self.jump_else.next
 

@@ -6,6 +6,7 @@ logger = getLogger(__name__)
 
 
 class AlgorithmLexer(object):
+    # V premennej keywords definujeme všetky kľúčové slová gramatiky.
     keywords = (
         'TERM',
         'IMPULSE', 'READ',
@@ -21,25 +22,39 @@ class AlgorithmLexer(object):
         'IDENTIFIER', 'STRING', 'NUMBER'
     )
 
+    # Premenná literals je špeciálna premenná modulu PLY. Slúži na definíciu tokenov, # ktoré sa skladajú z jedného znaku. Následne je ich potom možné použiť pri
+    # definícii gramatiky v pôvodnom tvare napr '='.
     literals = ['=', ',', ';', '(', ')', '+', '-', '*', '/', '<', '>', '[', ']', '!']
 
-    # Ignored characters
+    # Ignorovaný je znak nového riadku, tabulátor a medzera.
     t_ignore = ' \t\n'
 
+    # Definícia tokenu cez metódu. Token IDENTIFIER slúži na identifikáciu stavov
+    # alebo premenných.
     def t_IDENTIFIER(self, t):
+        # Cez regulárny výraz, ktorý sa nachádza za definíciou názvu a argumentov
+        # metódy, určujeme pri akom vstupe má byť token identifikovaný.
+        # Identifikujeme iba slová zložené z veľkých a malých písmen abecedy.
         r'[a-zA-Z][a-zA-Z]*'
+
+        # Token IDENTIFIER by normálne identifikoval aj kľúčové slová napr if, else.
+        # Preto kontrolujeme či sa identifikovaná hodnota nachádza v atribúte keywords.
+        # Ak áno tak nastavíme typ tokenu na hodnotu teda samotné kľúčové slovo.
         if t.value in self.keywords:  # is this a keyword?
             t.type = t.value
             return t
 
+        # Ak sa jedná o premennú pridáme prefix „i_“ názvu premennej.
         t.value = 'i_' + t.value
         return t
 
     def t_STRING(self, t):
+        # Token identifikuje dátový typ STRING - reťazec ohraničený úvodzovkami.
         r'"(?:[^"\\]|\\.)*"'
         return t
 
     def t_NUMBER(self, t):
+        # Token identifikuje dátový typ NUMBER – celé, desatinné čísla.
         r'[0-9]+(\.[0-9]+)?'
         return t
 

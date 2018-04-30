@@ -26,27 +26,44 @@ class AlgorithmParser(object):
         self.algorithm.term_states.append(p[1])
         self.all_states.append(p[1])
 
+    # Definujeme, že druhá sekcia algoritmu sa skladá zo stavov.
     def p_second_section(self, p):
+        # Každý token v pravidle má svoju číselnú pozíciu, začínajúc od 0.
+        # K hodnotena pozícii sa pristupuje pomocou premennej p.
+        #          p[0]       p[1]
         ''' second_section : states '''
+        # Definícia gramatického pravidla v BNF forme.
 
+    # Tieto stavy v sebe definujú príslušné správania. Token IDENTIFIER na pozícii 1
+    # reprezentuje názov stavu.
     def p_states(self, p):
         ''' states : IDENTIFIER seen_state states_behaviors
                    | IDENTIFIER seen_state states_behaviors states '''
 
     def p_seen_state(self, p):
         ''' seen_state : '''
+        # Kód, ktorý sa nachádza za definíciou gramatického pravidla sa vykoná keď
+        # syntaktický analyzátor vykoná redukciu pravidla.
         self.state = p[-1]
         self.all_states.append(self.state)
 
+    # Toto gramatické pravidlo nám umožňuje definovať, že pre jeden stav dokážeme
+    # spracovať viacero správaní. Využívame vlastnosť rekurzie formálnej gramatiky.
     def p_states_behaviors(self, p):
         ''' states_behaviors : behavior add_behaviors
                              | behavior states_behaviors '''
 
     def p_add_behaviors(self, p):
         ''' add_behaviors : '''
+        # Do dátovej štruktúry algoritmu, ktorá je jedným zo vstupov syntaktického
+        # analyzátora v tomto pravidle ukladáme pre identifikovaný stav slovník s
+        # rôznymi správaniami.
         self.algorithm.states_behaviors[self.state] = self.state_behaviors
         self.state_behaviors = {}
 
+    # Toto pravidlo definuje jednotlivé správania. Správania sa skladá z iniciačnej akcie
+    # a následne jeho tela, ktoré je ohraničené tokenmi begin a end. Telo správania sa
+    # skladá zase z množiny príkazov.
     def p_behavior(self, p):
         ''' behavior : initiation_event begin statements end '''
         if p[1] in self.state_behaviors:
@@ -57,6 +74,10 @@ class AlgorithmParser(object):
         self.behavior = Behavior()
         self.jump_ids = 0
 
+    # V tejto metóde môžeme vidieť ďalšiu z vlastností modulu PLY. V zdrojovom kóde
+    # priraďujeme do premennej p[0] nejakú hodnotu. Ak príde k redukcii tohto
+    # pravidla, tak sa táto hodnota prenesie do pravidla, ktoré sa bude redukovať po
+    # tomto. V tomto prípade do pravidla definovaného metódou p_behavior().
     def p_initiation_event(self, p):
         ''' initiation_event : IMPULSE
                              | READ '(' read_arguments ')'  '''
@@ -67,6 +88,7 @@ class AlgorithmParser(object):
         ''' statements : statement
                        | statement statements '''
 
+    # V tele správania sa môže vyskytnúť akcia, podmienka alebo priradenie.
     def p_statement(self, p):
         ''' statement : action
                       | if_statement
@@ -121,6 +143,9 @@ class AlgorithmParser(object):
         self.behavior.insert(ElseNode(self.jump_ids))
         self.jump_ids += 1
 
+    # V nasledujúcej metóde definujeme jednotlivé akcie, ktoré môže entita vykonávať.
+    # Podľa toho akú akciu identifikujeme sa vykoná vloženie uzla action do štruktúry
+    # spájaného zoznamu reprezentujúceho správanie.
     def p_action(self, p):
         ''' action : SEND '(' send_arguments ')'
                    | BECOME '(' become_arguments ')'
@@ -364,6 +389,8 @@ class AlgorithmParser(object):
 
     @open_file
     def parsing(self, file):
+        # Metóda pre získanie tokenov zo súboru. Treba si všimnúť, že nevyužívame
+        # metódu z príslušného lexikálneho analyzátora lexical_analysis().
         def get_token():
             while True:
                 token = self.lexer._lexer.token()
@@ -375,9 +402,15 @@ class AlgorithmParser(object):
                 except StopIteration:
                     return None
 
+        # Metóda parse() slúži na vykonanie parsovania. Prvý argument je vstup do
+        # syntaktického analyzátora, avšak jeho hodnota je prázdny reťazec. Keďže chceme
+        # spracovať súbor obsahujúci viac riadkov tak nastavíme argument lexer na
+        # príslušný lexikálny analyzátor a zároveň v tele metódy parsing() zadefinujeme
+        # funkciu get_token(), ktorá nám súbor postupne prejde a vráti každý token, ktorý
+        # identifikuje.
         self._parser.parse("", lexer=self.lexer._lexer, tokenfunc=get_token, tracking=True)
 
-        # check if states used in BECOME action are defined
+        # Kontrola, či stavy použité v akcii BECOME sú definované v opise.
         for s in self.used_states:
             if s not in self.all_states:
                 logger.info("Trying to change state of entity to undefined state! -> {}".format(s))
@@ -392,15 +425,26 @@ class AlgorithmParser(object):
                 logger.info("STATE {0} [\n{1} -> \n\t{2}]\n".format(s, i, b))
 
     def process_conditions_scopes(self):
+        # Prejdeme každý stav a k nemu príslušné správania.
         for s, bs in self.algorithm.states_behaviors.items():
             for i, b in bs.items():
+                # Nastavíme sa na koniec spájaného zoznamu.
                 n = b.tail
 
                 while n is not None:
                     if type(n) is IfNode:
                         n1 = n
 
+                        # Následne ak sme našli if uzol iterujeme od tohto uzlu smerom ku koncu
+                        # zonamu.
                         while n1 is not None:
+                            # Pri tejto iterácii smerujúcej ku koncu hľadáme najbližší endif uzol
+                            # alebo else uzol, ktorý patrí k nájdenému if uzlu. Následne tieto uzly
+                            # spárujeme. Ak sa jedná o else uzol vykoná sa ešte jedna iterácia
+                            # smerom ku koncu zoznamu hľadajúca príslušný endif uzol. Aby sme
+                            # pri ďalších iteráciách pre iné if uzly nenarazili na tie isté prvé endif
+                            # a else uzly, nastavíme atribút uzlu scope_processed na True. Táto
+                            # premenná značí, že uzol už bol spracovaný.
                             if (type(n1) is EndIfNode
                                     and not n1.scope_processed):
                                 n.jump_endif = n1
