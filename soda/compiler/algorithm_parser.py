@@ -29,7 +29,7 @@ class AlgorithmParser(object):
     # Definujeme, že druhá sekcia algoritmu sa skladá zo stavov.
     def p_second_section(self, p):
         # Každý token v pravidle má svoju číselnú pozíciu, začínajúc od 0.
-        # K hodnotena pozícii sa pristupuje pomocou premennej p.
+        # K hodnote na pozícii sa pristupuje pomocou premennej p.
         #          p[0]       p[1]
         ''' second_section : states '''
         # Definícia gramatického pravidla v BNF forme.
@@ -61,7 +61,7 @@ class AlgorithmParser(object):
         self.algorithm.states_behaviors[self.state] = self.state_behaviors
         self.state_behaviors = {}
 
-    # Toto pravidlo definuje jednotlivé správania. Správania sa skladá z iniciačnej akcie
+    # Toto pravidlo definuje jednotlivé správania. Správania sa skladajú z iniciačnej akcie
     # a následne jeho tela, ktoré je ohraničené tokenmi begin a end. Telo správania sa
     # skladá zase z množiny príkazov.
     def p_behavior(self, p):
@@ -432,6 +432,7 @@ class AlgorithmParser(object):
                 n = b.tail
 
                 while n is not None:
+                    # Ideme od konca dopredu, pokiaľ nenarazíme na if uzol.
                     if type(n) is IfNode:
                         n1 = n
 
