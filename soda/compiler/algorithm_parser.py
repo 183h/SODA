@@ -83,13 +83,22 @@ class AlgorithmParser(object):
                       | condition '<' '=' condition
                       | condition '>' '=' condition
                       | condition '!' '=' condition
+                      | condition and condition
+                      | condition or condition
                       | '(' condition ')'
                       | number_expr
                       | IDENTIFIER
                       | LEN '(' IDENTIFIER ')'
                       | not IDENTIFIER '''
-        if p[1] == 'not':
-            p[1] = 'not '
+        try:
+            if p[1] == 'not':
+                p[1] = ' not '
+            elif p[2] == 'and':
+                p[2] = ' and '
+            elif p[2] == 'or':
+                p[2] = ' or '
+        except:
+            pass
 
         p[0] = p[:]
         self.condition.append(list(filter(lambda x: x is not None, p[1:])))

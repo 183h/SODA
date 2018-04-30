@@ -14,7 +14,7 @@ class AlgorithmLexer(object):
         'if', 'then', 'endif', 'else',
         'int', 'string', 'float',
         'ADD', 'REMOVE', 'POP', 'LEN',
-        'True', 'False', 'not'
+        'True', 'False', 'not', 'and', 'or'
     )
 
     tokens = keywords + (
